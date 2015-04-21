@@ -26,6 +26,8 @@ public class TranslationDAOImpl implements TranslationDAO {
 
         final Client client = new TransportClient().addTransportAddress(new InetSocketTransportAddress(
                 "localhost", 9300));
+        // final Node node = NodeBuilder.nodeBuilder().node();
+        // final Client client = node.client();
 
         final GetResponse response = client.prepareGet("lldsearch",
                 "directTrans", id).execute().actionGet();
@@ -33,6 +35,7 @@ public class TranslationDAOImpl implements TranslationDAO {
                 response.getSource());
 
         client.close();
+        // node.close();
 
         return translation;
     }
