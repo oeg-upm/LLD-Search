@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>LLD Multilingual Search</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Linguistic Linked Data Multilingual Search</h1>
+    <p th:text="'You searched the translation with id: ' + ${translation.trans}" />
+    <table>
+        <tr>
+            <td>Source lexicon: </td>
+            <td th:text="${translation.lexiconSource}"></td>
+        </tr>
+        <tr>
+            <td>Source label: </td>
+            <td th:text="${translation.writtenRepSource}"></td>
+        </tr>
+        <tr>
+            <td>Target lexicon: </td>
+            <td th:text="${translation.lexiconTarget}"></td>
+        </tr>
+        <tr>
+            <td>Target label: </td>
+            <td th:text="${translation.writtenRepTarget}"></td>
+        </tr>
+        <tr>
+            <td>Part of speech: </td>
+            <td th:text="${translation.partOfSpeech}"></td>
+        </tr>
+    </table>
+</body>
+</html>
