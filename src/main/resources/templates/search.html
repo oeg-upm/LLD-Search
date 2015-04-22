@@ -7,8 +7,47 @@
 <body>
     <h1>Linguistic Linked Data Multilingual Search</h1>
     <form action="#" th:action="@{/search}" th:object="${searchElement}" method="post">
-        <p>Search query: <input type="text" th:field="*{query}" /></p>
-        <p><input type="submit" value="Search" /> <input type="reset" value="Reset" /></p>
+    <table>
+            <tr>
+                <td>Search term: </td>
+                <td><input type="text" th:field="*{term}" /></td>
+            </tr>
+            <tr>
+                <td>Term language: </td> 
+                <!-- <td><input type="text" th:field="*{langSource}" /></td> -->
+                <td><select th:field="*{langSource}" >
+                        <option th:each="slang : ${languages}" 
+                                th:value="${slang}" 
+                                th:text="${slang}">
+                        </option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Get translation in language:</td>
+                <td><select th:field="*{langTarget}">
+                        <option th:each="lang : ${languages}" 
+                                th:value="${lang}" 
+                                th:text="${lang}">
+                        </option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Search" /> <input type="reset" value="Reset" /></td>
+            </tr>
+        </table>
     </form>
+    <!-- <script type="text/javascript">
+    function getTargetLanguages() {
+        var url = '/search';
+        
+        if ($('#langSource').val() != '') {
+            url = url + '/' + $('#langSource').val();
+        }
+        
+        $("#resultsBlock").load(url);
+    }
+    </script> -->
 </body>
 </html>

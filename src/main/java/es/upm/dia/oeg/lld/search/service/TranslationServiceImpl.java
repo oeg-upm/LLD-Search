@@ -1,5 +1,8 @@
 package es.upm.dia.oeg.lld.search.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +16,23 @@ public class TranslationServiceImpl implements TranslationService {
     TranslationDAO translationDAO;
 
     @Override
-    public Translation getTranslationByID(String id) {
-        Translation translation = translationDAO.getTranslationByID(id);
+    public List<String> getLanguages() {
+        final List<String> languages = new ArrayList<String>();
+        // First option is all languages (no restriction)
+        languages.add("All");
 
-        if (translation == null) {
-            translation = new Translation();
-            translation.setTrans("null translation");
-        }
+        languages.addAll(this.translationDAO.getLanguages());
 
-        return translation;
+        return languages;
+    }
+
+    @Override
+    public List<Translation> getAllTranslations(String label,
+            String langSource, String langTarget) {
+        final List<Translation> translations = this.translationDAO.searchAllTranslations(
+                label, langSource, langTarget);
+
+        return translations;
     }
 
 }

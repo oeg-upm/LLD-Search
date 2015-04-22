@@ -6,28 +6,26 @@
 </head>
 <body>
     <h1>Linguistic Linked Data Multilingual Search</h1>
-    <p th:text="'You searched the translation with id: ' + ${translation.trans}" />
+    <p th:text="'You searched the translation for the term ' + ${searchElement.term} + ' from language ' + ${searchElement.langSource}" />
     <table>
-        <tr>
-            <td>Source lexicon: </td>
-            <td th:text="${translation.lexiconSource}"></td>
-        </tr>
-        <tr>
-            <td>Source label: </td>
-            <td th:text="${translation.writtenRepSource}"></td>
-        </tr>
-        <tr>
-            <td>Target lexicon: </td>
-            <td th:text="${translation.lexiconTarget}"></td>
-        </tr>
-        <tr>
-            <td>Target label: </td>
-            <td th:text="${translation.writtenRepTarget}"></td>
-        </tr>
-        <tr>
-            <td>Part of speech: </td>
-            <td th:text="${translation.partOfSpeech}"></td>
-        </tr>
-    </table>
+    <thead>
+      <tr>
+        <th>Translated label</th>
+        <th>Translation language</th>
+        <th>Translation sense</th>
+        <th>Part of Speech</th> 
+        <th>BabelNet sysnset</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="trans : ${translations}">
+        <td th:text="${trans.writtenRepTarget}"></td>
+        <td th:text="${trans.langTarget}"></td>
+        <td th:text="${trans.senseTarget}"></td>
+        <td th:text="${trans.partOfSpeech}"></td>
+        <td th:text="${trans.babelnetSynset}"></td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 </html>

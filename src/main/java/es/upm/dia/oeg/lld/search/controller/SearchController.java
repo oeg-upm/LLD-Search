@@ -1,5 +1,7 @@
 package es.upm.dia.oeg.lld.search.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,8 @@ public class SearchController {
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String searchForm(Model model) {
+        final List<String> languages = this.translationService.getLanguages();
+        model.addAttribute("languages", languages);
         model.addAttribute("searchElement", new SearchElement());
         return "search";
     }
@@ -26,8 +30,11 @@ public class SearchController {
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public String search(@ModelAttribute SearchElement searchElement,
             Model model) {
-        final Translation translation = this.translationService.getTranslationByID(searchElement.getQuery());
-        model.addAttribute("translation", translation);
+        final List<Translation> translations = this.translationService.getAllTranslations(
+                searchElement.getTerm(), searchElement.getLangSource(),
+                searchElement.getLangTarget());
+        model.addAttribute("searchElement", searchElement);
+        model.addAttribute("translations", translations);
         return "result";
     }
 }

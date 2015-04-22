@@ -6,8 +6,8 @@ import es.upm.dia.oeg.lld.search.model.Translation;
 
 public interface TranslationDAO {
 
-    public List<Translation> getTranslations();
+    public List<String> getLanguages();
 
-    public Translation getTranslationByID(String id);
-
+    public List<Translation> searchAllTranslations(String label,
+            String langSource, String langTarget);
 }
