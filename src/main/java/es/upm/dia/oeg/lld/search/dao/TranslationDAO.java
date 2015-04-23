@@ -8,6 +8,9 @@ public interface TranslationDAO {
 
     public List<String> getLanguages();
 
-    public List<Translation> searchAllTranslations(String label,
-            String langSource, String langTarget);
+    public List<Translation> searchDirectTranslations(String label,
+            String langSource, String langTarget, boolean babelnet);
+
+    public List<Translation> searchIndirectTranslations(String label,
+            String langSource, String langTarget, boolean babelnet);
 }

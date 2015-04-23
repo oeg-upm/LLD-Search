@@ -8,13 +8,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class Translation {
 
-    private URI trans;
+    // private URI trans;
     private String langSource;
     private String langTarget;
     private URI lexiconSource;
     private URI lexiconTarget;
-    private URI senseSource;
-    private URI senseTarget;
     private String writtenRepSource;
     private String writtenRepTarget;
     private URI partOfSpeech;
@@ -23,8 +21,9 @@ public class Translation {
 
     // For indirect translations, direct=false and pivotLanguage and score have
     // values
-    // private boolean direct;
-    // private String pivotLanguage;
+    private boolean indirect;
+    private String pivotLanguage;
+
     // private float score;
 
     public Translation() {
@@ -41,36 +40,36 @@ public class Translation {
     // this.partOfSpeech = source.get("POS").toString();
     // }
 
-    // /**
-    // * @return the direct
-    // */
-    // public final boolean isDirect() {
-    // return direct;
-    // }
-    //
-    // /**
-    // * @param direct
-    // * the direct to set
-    // */
-    // public final void setDirect(boolean direct) {
-    // this.direct = direct;
-    // }
-    //
-    // /**
-    // * @return the pivotLanguage
-    // */
-    // public final String getPivotLanguage() {
-    // return pivotLanguage;
-    // }
-    //
-    // /**
-    // * @param pivotLanguage
-    // * the pivotLanguage to set
-    // */
-    // public final void setPivotLanguage(String pivotLanguage) {
-    // this.pivotLanguage = pivotLanguage;
-    // }
-    //
+    /**
+     * @return the direct
+     */
+    public final boolean isIndirect() {
+        return this.indirect;
+    }
+
+    /**
+     * @param direct
+     *            the direct to set
+     */
+    public final void setIndirect(boolean indirect) {
+        this.indirect = indirect;
+    }
+
+    /**
+     * @return the pivotLanguage
+     */
+    public final String getPivotLanguage() {
+        return this.pivotLanguage;
+    }
+
+    /**
+     * @param pivotLanguage
+     *            the pivotLanguage to set
+     */
+    public final void setPivotLanguage(String pivotLanguage) {
+        this.pivotLanguage = pivotLanguage;
+    }
+
     // /**
     // * @return the score
     // */
@@ -86,21 +85,21 @@ public class Translation {
     // this.score = score;
     // }
 
-    /**
-     * @return the trans
-     */
-    public final URI getTrans() {
-        return this.trans;
-    }
-
-    /**
-     * @param trans
-     *            the trans to set
-     * @throws URISyntaxException
-     */
-    public final void setTrans(String trans) throws URISyntaxException {
-        this.trans = new URI(trans);
-    }
+    // /**
+    // * @return the trans
+    // */
+    // public final URI getTrans() {
+    // return this.trans;
+    // }
+    //
+    // /**
+    // * @param trans
+    // * the trans to set
+    // * @throws URISyntaxException
+    // */
+    // public final void setTrans(String trans) throws URISyntaxException {
+    // this.trans = new URI(trans);
+    // }
 
     /**
      * @return the lexiconSource
@@ -134,40 +133,6 @@ public class Translation {
     public final void setLexiconTarget(String lexiconTarget)
             throws URISyntaxException {
         this.lexiconTarget = new URI(lexiconTarget);
-    }
-
-    /**
-     * @return the senseSource
-     */
-    public final URI getSenseSource() {
-        return this.senseSource;
-    }
-
-    /**
-     * @param senseSource
-     *            the senseSource to set
-     * @throws URISyntaxException
-     */
-    public final void setSenseSource(String senseSource)
-            throws URISyntaxException {
-        this.senseSource = new URI(senseSource);
-    }
-
-    /**
-     * @return the senseTarget
-     */
-    public final URI getSenseTarget() {
-        return this.senseTarget;
-    }
-
-    /**
-     * @param senseTarget
-     *            the senseTarget to set
-     * @throws URISyntaxException
-     */
-    public final void setSenseTarget(String senseTarget)
-            throws URISyntaxException {
-        this.senseTarget = new URI(senseTarget);
     }
 
     /**
@@ -233,8 +198,8 @@ public class Translation {
     /**
      * @return the partOfSpeech
      */
-    public final URI getPartOfSpeech() {
-        return this.partOfSpeech;
+    public final String getPartOfSpeech() {
+        return this.partOfSpeech.getFragment();
     }
 
     /**

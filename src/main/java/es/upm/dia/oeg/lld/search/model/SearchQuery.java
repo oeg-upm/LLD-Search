@@ -2,7 +2,7 @@ package es.upm.dia.oeg.lld.search.model;
 
 import javax.validation.constraints.NotNull;
 
-public class SearchElement {
+public class SearchQuery {
 
     @NotNull
     private String term;
@@ -11,6 +11,10 @@ public class SearchElement {
     private String langSource;
 
     private String langTarget;
+
+    private boolean babelnet;
+
+    private boolean indirect;
 
     /**
      * @return the query
@@ -55,5 +59,35 @@ public class SearchElement {
      */
     public final void setLangTarget(String lang) {
         this.langTarget = lang;
+    }
+
+    /**
+     * @return the babelnet
+     */
+    public final boolean getBabelnet() {
+        return this.babelnet;
+    }
+
+    /**
+     * @param babelnet
+     *            the babelnet to set
+     */
+    public final void setBabelnet(boolean babelnet) {
+        this.babelnet = babelnet;
+    }
+
+    /**
+     * @return the indirect
+     */
+    public final boolean isIndirect() {
+        return this.indirect;
+    }
+
+    /**
+     * @param indirect
+     *            the indirect to set
+     */
+    public final void setIndirect(boolean indirect) {
+        this.indirect = indirect;
     }
 }

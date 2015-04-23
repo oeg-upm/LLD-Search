@@ -6,13 +6,15 @@
 </head>
 <body>
     <h1>Linguistic Linked Data Multilingual Search</h1>
-    <p th:text="'You searched the translation for the term ' + ${searchElement.term} + ' from language ' + ${searchElement.langSource}" />
+    <p align="right">
+       <a th:href="@{/search}">New search</a>
+    </p>
+    <p th:text="'You searched the translation for the term ' + ${searchQuery.term} + ' from ' + ${searchQuery.langSource} + ' to ' + ${searchQuery.langTarget}" />
     <table>
     <thead>
       <tr>
         <th>Translated label</th>
         <th>Translation language</th>
-        <th>Translation sense</th>
         <th>Part of Speech</th> 
         <th>BabelNet sysnset</th>
       </tr>
@@ -21,7 +23,6 @@
       <tr th:each="trans : ${translations}">
         <td th:text="${trans.writtenRepTarget}"></td>
         <td th:text="${trans.langTarget}"></td>
-        <td th:text="${trans.senseTarget}"></td>
         <td th:text="${trans.partOfSpeech}"></td>
         <td th:text="${trans.babelnetSynset}"></td>
       </tr>

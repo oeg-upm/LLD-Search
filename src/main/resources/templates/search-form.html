@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Linguistic Linked Data Multilingual Search</h1>
-    <form action="#" th:action="@{/search}" th:object="${searchElement}" method="post">
+    <form action="#" th:action="@{/search}" th:object="${searchQuery}" method="post">
     <table>
             <tr>
                 <td>Search term: </td>
@@ -32,6 +32,14 @@
                         </option>
                     </select>
                 </td>
+            </tr>
+            <tr>
+                <td>Get babelnet synsets: </td>
+                <td><input type="checkbox" th:field="*{babelnet}" /></td>
+            </tr>
+            <tr>
+                <td>Get indirect translations: </td>
+                <td><input type="checkbox" th:field="*{indirect}" /></td>
             </tr>
             <tr>
                 <td><input type="submit" value="Search" /> <input type="reset" value="Reset" /></td>

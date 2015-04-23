@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import es.upm.dia.oeg.lld.search.dao.TranslationDAO;
+import es.upm.dia.oeg.lld.search.model.SearchQuery;
 import es.upm.dia.oeg.lld.search.model.Translation;
 
 @Service
@@ -27,12 +28,23 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
-    public List<Translation> getAllTranslations(String label,
-            String langSource, String langTarget) {
-        final List<Translation> translations = this.translationDAO.searchAllTranslations(
-                label, langSource, langTarget);
+    public List<Translation> getTranslations(SearchQuery searchQuery) {
 
-        return translations;
+        String langTarget = searchQuery.getLangTarget();
+
+        if (langTarget.equalsIgnoreCase("All")) {
+            langTarget = null;
+        }
+
+        if (searchQuery.isIndirect()) {
+            return this.translationDAO.searchIndirectTranslations(
+                    searchQuery.getTerm(), searchQuery.getLangSource(),
+                    langTarget, searchQuery.getBabelnet());
+        }
+
+        return this.translationDAO.searchDirectTranslations(
+                searchQuery.getTerm(), searchQuery.getLangSource(), langTarget,
+                searchQuery.getBabelnet());
     }
 
 }

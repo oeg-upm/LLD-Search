@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>LLD Multilingual Search</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Linguistic Linked Data Multilingual Search</h1>
+    <p align="right">
+       <a th:href="@{/search}">New search</a>
+    </p>
+    <p th:text="'You searched the translation for the term ' + ${searchQuery.term} + ' from ' + ${searchQuery.langSource} + ' to ' + ${searchQuery.langTarget}" />
+    <table>
+    <thead>
+      <tr>
+        <th>Translated label</th>
+        <th>Translation language</th>
+        <th>Pivot language</th>
+        <th>Part of Speech</th>
+        <th>BabelNet sysnset</th> 
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="trans : ${translations}">
+        <td th:text="${trans.writtenRepTarget}"></td>
+        <td th:text="${trans.langTarget}"></td>
+        <td th:text="${trans.pivotLanguage}"></td>
+        <td th:text="${trans.partOfSpeech}"></td>
+        <td th:text="${trans.babelnetSynset}"></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

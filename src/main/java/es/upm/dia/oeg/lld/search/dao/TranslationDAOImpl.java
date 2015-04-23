@@ -12,7 +12,6 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 
 import es.upm.dia.oeg.lld.search.model.Translation;
 import es.upm.dia.oeg.lld.search.utils.AppConstants;
@@ -23,16 +22,7 @@ public class TranslationDAOImpl implements TranslationDAO {
     @Override
     public List<String> getLanguages() {
 
-        final String queryString = "PREFIX lemon: <http://www.lemon-model.net/lemon#> "
-                + "PREFIX tr: <http://purl.org/net/translation#> "
-                + "PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#> "
-                + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-                + "SELECT distinct ?lexicon_a ?lang "
-                + "WHERE {"
-                + "  ?lexicon_a a lemon:Lexicon ; "
-                + "    lemon:language ?lang ; "
-                + "    rdfs:label ?label . "
-                + "} ORDER BY ?lang ";
+        final String queryString = AppConstants.GET_ALL_LANGUAGES_QUERY;
 
         final Query query = QueryFactory.create(queryString);
 
@@ -55,77 +45,37 @@ public class TranslationDAOImpl implements TranslationDAO {
     }
 
     private final Translation createTranslation(String label, String lang,
-            QuerySolution result) {
+            QuerySolution result, boolean indirect, boolean babelnet) {
         final Translation trans = new Translation();
 
         try {
-            trans.setTrans(result.get("trans").toString());
-            trans.setLexiconSource(result.get("lexicon_a").toString());
-            trans.setLexiconTarget(result.get("lexicon_b").toString());
-            trans.setSenseSource(result.get("sense_a").toString());
-            trans.setSenseTarget(result.get("sense_b").toString());
+            // trans.setTrans(result.get("trans").toString());
+            trans.setLexiconSource(result.get("lexicon_source").toString());
+            trans.setLexiconTarget(result.get("lexicon_target").toString());
             trans.setWrittenRepSource(label);
-            trans.setWrittenRepTarget(result.get("written_rep_b").asLiteral().getLexicalForm());
+            trans.setWrittenRepTarget(result.get("written_rep_target").asLiteral().getLexicalForm());
             trans.setLangSource(lang);
-            trans.setLangTarget(result.get("written_rep_b").asLiteral().getLanguage());
+            trans.setLangTarget(result.get("written_rep_target").asLiteral().getLanguage());
             trans.setPartOfSpeech(result.get("POS").toString());
+            trans.setIndirect(indirect);
 
-            final RDFNode bn = result.get("babelnet");
-            if (bn != null) {
-                trans.setBabelnetSynset(bn.toString());
+            if (babelnet && (result.get("babelnet") != null)) {
+                trans.setBabelnetSynset(result.get("babelnet").toString());
             }
+
+            if (indirect) {
+                trans.setPivotLanguage(result.get("written_rep_pivot").asLiteral().getLanguage());
+            }
+
         } catch (final URISyntaxException e) {
             e.printStackTrace();
         }
         return trans;
     }
 
-    @Override
-    public List<Translation> searchAllTranslations(String label,
-            String langSource, String langTarget) {
-
-        // The written representation at SPARQL endpoint is encoded like:
-        // "bank"@en
-        final String writtenRep = "\"" + label + "\"@" + langSource;
-
-        // Text in the query has to be between "", need to add & escape them.
-        langSource = "\"" + langSource + "\"";
-
-        // If all languages required, use a variable. Otherwise, add & escape ""
-        if (langTarget.equalsIgnoreCase("All")) {
-            langTarget = "?lang_b";
-        } else {
-            langTarget = "\"" + langTarget + "\"";
-        }
-
-        final String queryString = "PREFIX lemon: <http://www.lemon-model.net/lemon#> "
-                + "PREFIX tr: <http://purl.org/net/translation#> "
-                + "PREFIX lexinfo: <http://www.lexinfo.net/ontology/2.0/lexinfo#> "
-                + "SELECT DISTINCT ?written_rep_b ?POS ?sense_a ?sense_b ?trans ?lexicon_a ?lexicon_b ?babelnet "
-                + "WHERE { " + "?form_a lemon:writtenRep "
-                + writtenRep
-                + " . "
-                + "?lex_entry_a lemon:lexicalForm ?form_a . "
-                + "?sense_a lemon:isSenseOf  ?lex_entry_a .  "
-                + "?lexicon_a lemon:entry ?lex_entry_a . "
-                + "?lexicon_a lemon:language "
-                + langSource
-                + " .  "
-                + "?trans  tr:translationSense  ?sense_a .  "
-                + "?trans  tr:translationSense  ?sense_b .  "
-                + "?sense_b lemon:isSenseOf  ?lex_entry_b .   "
-                + "?lex_entry_b lemon:lexicalForm ?form_b . "
-                + "?form_b lemon:writtenRep ?written_rep_b . "
-                + "?lex_entry_b  lexinfo:partOfSpeech ?POS .   "
-                + "?lexicon_b lemon:entry ?lex_entry_b . "
-                + "?lexicon_b lemon:language "
-                + langTarget
-                + " .  "
-                + "minus { ?lexicon_b lemon:language "
-                + langSource
-                + "  } "
-                + "optional {?sense_a lemon:reference ?babelnet "
-                + "}} ORDER BY ?lexicon_b ";
+    private final List<Translation> getTranslations(String label,
+            String langSource, String queryString, boolean indirect,
+            boolean babelnet) {
 
         final Query query = QueryFactory.create(queryString);
 
@@ -140,7 +90,7 @@ public class TranslationDAOImpl implements TranslationDAO {
         while (results.hasNext()) {
             final QuerySolution result = results.next();
             final Translation trans = createTranslation(label, langSource,
-                    result);
+                    result, indirect, babelnet);
             translations.add(trans);
         }
 
@@ -148,4 +98,74 @@ public class TranslationDAOImpl implements TranslationDAO {
 
         return translations;
     }
+
+    @Override
+    public List<Translation> searchDirectTranslations(String label,
+            String langSource, String langTarget, boolean babelnet) {
+
+        // The written representation at SPARQL endpoint is encoded like:
+        // "bank"@en
+        final String writtenRep = "\"" + label + "\"@" + langSource;
+
+        // Text in the query has to be between "", need to add & escape them.
+        langSource = "\"" + langSource + "\"";
+
+        String queryString;
+
+        // SPARQL query differs if target language is a restriction
+        if (langTarget == null) {
+            if (babelnet) {
+                queryString = String.format(
+                        AppConstants.GET_DIRECT_TRANSLATIONS_ALL_LANGUAGES_BABELNET,
+                        writtenRep, langSource, langSource);
+            } else {
+                queryString = String.format(
+                        AppConstants.GET_DIRECT_TRANSLATIONS_ALL_LANGUAGES,
+                        writtenRep, langSource, langSource);
+            }
+        } else {
+            langTarget = "\"" + langTarget + "\"";
+
+            if (babelnet) {
+                queryString = String.format(
+                        AppConstants.GET_DIRECT_TRANSLATIONS_ONE_LANGUAGE_BABELNET,
+                        writtenRep, langSource, langTarget, langSource);
+            } else {
+                queryString = String.format(
+                        AppConstants.GET_DIRECT_TRANSLATIONS_ONE_LANGUAGE,
+                        writtenRep, langSource, langTarget, langSource);
+            }
+        }
+
+        return getTranslations(label, langSource, queryString, false, babelnet);
+    }
+
+    @Override
+    public List<Translation> searchIndirectTranslations(String label,
+            String langSource, String langTarget, boolean babelnet) {
+
+        // The written representation at SPARQL endpoint is encoded like:
+        // "bank"@en
+        final String writtenRep = "\"" + label + "\"@" + langSource;
+
+        // Text in the query has to be between "", need to add & escape them.
+        langSource = "\"" + langSource + "\"";
+        langTarget = "\"" + langTarget + "\"";
+
+        String queryString;
+
+        // SPARQL query differs if target language is a restriction
+        if (babelnet) {
+            queryString = String.format(
+                    AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_BABELNET,
+                    writtenRep, langTarget, langSource, langTarget);
+        } else {
+            queryString = String.format(
+                    AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE,
+                    writtenRep, langTarget, langSource, langTarget);
+        }
+
+        return getTranslations(label, langSource, queryString, true, babelnet);
+    }
+
 }

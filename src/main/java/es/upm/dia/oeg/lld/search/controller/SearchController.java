@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import es.upm.dia.oeg.lld.search.model.SearchElement;
+import es.upm.dia.oeg.lld.search.model.SearchQuery;
 import es.upm.dia.oeg.lld.search.model.Translation;
 import es.upm.dia.oeg.lld.search.service.TranslationService;
 
@@ -23,18 +23,20 @@ public class SearchController {
     public String searchForm(Model model) {
         final List<String> languages = this.translationService.getLanguages();
         model.addAttribute("languages", languages);
-        model.addAttribute("searchElement", new SearchElement());
-        return "search";
+        model.addAttribute("searchQuery", new SearchQuery());
+        return "search-form";
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
-    public String search(@ModelAttribute SearchElement searchElement,
-            Model model) {
-        final List<Translation> translations = this.translationService.getAllTranslations(
-                searchElement.getTerm(), searchElement.getLangSource(),
-                searchElement.getLangTarget());
-        model.addAttribute("searchElement", searchElement);
+    public String search(@ModelAttribute SearchQuery searchQuery, Model model) {
+        final List<Translation> translations = this.translationService.getTranslations(searchQuery);
+        model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("translations", translations);
-        return "result";
+
+        if (searchQuery.isIndirect()) {
+            return "results-indirect";
+        }
+
+        return "results-direct";
     }
 }
