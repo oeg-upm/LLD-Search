@@ -16,15 +16,15 @@
         <th>Translated label</th>
         <th>Translation language</th>
         <th>Part of Speech</th> 
-        <th>BabelNet sysnset</th>
+        <th th:if="${searchQuery.babelnet}" >BabelNet sysnset</th>
       </tr>
     </thead>
     <tbody>
-      <tr th:each="trans : ${translations}">
-        <td th:text="${trans.writtenRepTarget}"></td>
-        <td th:text="${trans.langTarget}"></td>
-        <td th:text="${trans.partOfSpeech}"></td>
-        <td th:text="${trans.babelnetSynset}"></td>
+      <tr th:each="trans : ${translations}" >
+        <td th:text="${trans.writtenRepTarget}" ></td>
+        <td th:text="${trans.langTarget}" ></td>
+        <td th:text="${trans.partOfSpeech}" ></td>
+        <td th:if="${searchQuery.babelnet}" ><a th:href="${trans.babelnetSynset}" th:text="${trans.babelnetSynset}"></a></td>
       </tr>
     </tbody>
   </table>

@@ -65,6 +65,7 @@ public class TranslationDAOImpl implements TranslationDAO {
 
             if (indirect) {
                 trans.setPivotLanguage(result.get("written_rep_pivot").asLiteral().getLanguage());
+
             }
 
         } catch (final URISyntaxException e) {
@@ -142,7 +143,8 @@ public class TranslationDAOImpl implements TranslationDAO {
 
     @Override
     public List<Translation> searchIndirectTranslations(String label,
-            String langSource, String langTarget, boolean babelnet) {
+            String langSource, String langTarget, String langPivot,
+            boolean babelnet) {
 
         // The written representation at SPARQL endpoint is encoded like:
         // "bank"@en
@@ -156,13 +158,27 @@ public class TranslationDAOImpl implements TranslationDAO {
 
         // SPARQL query differs if target language is a restriction
         if (babelnet) {
-            queryString = String.format(
-                    AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_BABELNET,
-                    writtenRep, langTarget, langSource, langTarget);
+            if (langPivot != null) {
+                langPivot = "\"" + langPivot + "\"";
+                queryString = String.format(
+                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_WITH_PIVOT_BABELNET,
+                        writtenRep, langPivot, langTarget);
+            } else {
+                queryString = String.format(
+                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_BABELNET,
+                        writtenRep, langTarget, langSource, langTarget);
+            }
         } else {
-            queryString = String.format(
-                    AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE,
-                    writtenRep, langTarget, langSource, langTarget);
+            if (langPivot != null) {
+                langPivot = "\"" + langPivot + "\"";
+                queryString = String.format(
+                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_WITH_PIVOT,
+                        writtenRep, langPivot, langTarget);
+            } else {
+                queryString = String.format(
+                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE,
+                        writtenRep, langTarget, langSource, langTarget);
+            }
         }
 
         return getTranslations(label, langSource, queryString, true, babelnet);

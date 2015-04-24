@@ -12,5 +12,6 @@ public interface TranslationDAO {
             String langSource, String langTarget, boolean babelnet);
 
     public List<Translation> searchIndirectTranslations(String label,
-            String langSource, String langTarget, boolean babelnet);
+            String langSource, String langTarget, String langPivot,
+            boolean babelnet);
 }

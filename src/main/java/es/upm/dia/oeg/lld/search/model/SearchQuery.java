@@ -10,7 +10,10 @@ public class SearchQuery {
     @NotNull
     private String langSource;
 
+    @NotNull
     private String langTarget;
+
+    private String pivotLanguage;
 
     private boolean babelnet;
 
@@ -89,5 +92,20 @@ public class SearchQuery {
      */
     public final void setIndirect(boolean indirect) {
         this.indirect = indirect;
+    }
+
+    /**
+     * @return the pivotLanguage
+     */
+    public final String getPivotLanguage() {
+        return this.pivotLanguage;
+    }
+
+    /**
+     * @param pivotLanguage
+     *            the pivotLanguage to set
+     */
+    public final void setPivotLanguage(String pivotLanguage) {
+        this.pivotLanguage = pivotLanguage;
     }
 }
