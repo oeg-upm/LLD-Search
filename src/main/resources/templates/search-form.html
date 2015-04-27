@@ -1,71 +1,158 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>LLD Multilingual Search</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-    <h1>Linguistic Linked Data Multilingual Search</h1>
-    <form action="#" th:action="@{/search}" th:object="${searchQuery}" method="post">
-    <table>
-            <tr>
-                <td>Search term: </td>
-                <td><input type="text" th:field="*{term}" placeholder="term to be translated" /></td>
-                <td th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></td>
-            </tr>
-            <tr>
-                <td>Input language: </td> 
-                <td><select th:field="*{langSource}" name="language">
-                        <option value="" >-- select an option --</option>
+  <head>
+
+
+    <title>Lider search</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css"  th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet"/>
+
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet" />
+	
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+
+   
+  </head>
+
+  <body>
+
+    <nav class="navbar lider-header" >
+      <div class="container">
+        <div class="navbar-header">
+  
+          <p class="lider-brand" >Linguistic Linked Data Multilingual search | Ontology Engineering Group</p>
+        </div>
+      
+      </div>
+    </nav>
+
+
+		  
+		  
+	<form th:action="@{/search}" th:object="${searchQuery}" method="post">	  
+      <!-- Example row of columns -->
+	  <div class="row lider-search">
+        
+	  <div class="col-md-4 col-md-offset-4">
+        
+        <div class="input-group">
+                <span class="input-group-addon" >Search</span>
+                  
+                  <input type="text" th:field="*{term}" class="form-control typeahead" autocomplete="off" placeholder="Term to be translated" id="search-query" />
+                  <span class="input-group-btn">
+                      <button class="btn btn-default" type="submit" ><span class="glyphicon glyphicon-search" /></button>
+                  </span>
+				  <!-- errors-->
+				 
+            </div>
+        
+	
+		
+	  </div>
+	  </div>
+	  <div class="row">
+
+	  <div class="col-md-4 col-md-offset-4">
+         <p class="info-error" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></p>
+
+	  </div>
+	  </div>
+      
+	  <!-- options -->
+      <div class="row">
+        <div class="col-md-3 col-md-offset-4">
+            <p>Input language: 
+			<select th:field="*{langSource}" name="language">
+                        <option value="" >- select option -</option>
                         <option th:each="lang : ${languagesFrom}" 
                                 th:value="${lang}" 
                                 th:text="${lang}">
                         </option>
-                    </select>
-                </td>
-                <td th:if="${#fields.hasErrors('langSource')}" th:errors="*{langSource}"></td>
-            </tr>
-            <tr>
-                <td>Translation language:</td>
-                <td><select th:field="*{langTarget}">
+            </select>
+            </p>
+            
+        </div>
+		<div class="col-md-2"> 
+			<p class="info-error" th:if="${#fields.hasErrors('langSource')}" th:errors="*{langSource}"></p>
+		</div>
+		
+	 </div>	
+	 
+	 <div class="row">
+        <div class="col-md-3 col-md-offset-4">
+		 <p>Translation Language: 
+				<select th:field="*{langTarget}">
                         <option th:each="langT : ${languagesTo}" 
                                 th:value="${langT}" 
                                 th:text="${langT}">
                         </option>
                     </select>
-                </td>
-                <td th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></td>
-            </tr>
-            <tr>
-                <td>Get babelnet synsets: </td>
-                <td><input type="checkbox" th:field="*{babelnet}" /></td>
-            </tr>
-            <tr>
-                <td>Get indirect translations (not compatible with "All" option for target language): </td>
-                <td><input type="checkbox" th:field="*{indirect}" /></td>
-            </tr>
-            <tr>
-                <td>Set pivot language (optional): </td> 
-                <!-- <td><input type="text" th:field="*{langSource}" /></td> -->
-                <td><select th:field="*{pivotLanguage}" >
+                </p>
+				
+       
+	    </div>
+		<div class="col-md-2"> 
+			<p  class="info-error" th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></p>
+		</div>
+	   </div>	
+	   
+	   <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+		
+		
+                <p>Get babelnet synsets: <input type="checkbox" th:field="*{babelnet}" /></p>
+           
+                <p>Get indirect translations (not compatible with "All"
+					option for target language): <input type="checkbox" th:field="*{indirect}" /></p>
+            
+                <!--p><input type="submit" value="Search" /> <input type="reset" value="Reset" /></p-->
+				<p> Set pivot language (optional): <select th:field="*{pivotLanguage}" >
                         <option th:each="langP : ${languagesTo}" 
                                 th:value="${langP}" 
                                 th:text="${langP}">
                         </option>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <td><input type="submit" value="Search" /> <input type="reset" value="Reset" /></td>
-            </tr>
-        </table>
-    </form>
-    <script type="text/javascript">
+				
+				</p>
+            
+        </div>
+		
+		
+		
+      </div>
+		
+	
+	  
+	  </form>
+      <hr/>
+
+      <footer class="col-md-offset-2">
+        <p> Ontology Engineering Group </p>
+      </footer>
+	  
+    <!-- /container -->
+    
+    
+	<script type="text/javascript">
     $('language').onchange = filterDictionaries;
     
     function filterDictionaries() {
     	$.getJSON()
     }
     </script>
-</body>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
 </html>

@@ -1,32 +1,102 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+  <head>
+
     <title>LLD Multilingual Search</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-    <h1>Linguistic Linked Data Multilingual Search</h1>
-    <p align="right">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css"  th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    
+    <!-- Custom styles for this template -->
+    <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet"/>
+	
+    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+  </head>
+
+  <body>
+
+	<!--  header -->
+    <nav class="navbar lider-header" >
+      <div class="container">
+        <div class="navbar-header">
+          <p class="lider-brand" href="">Linguistic Linked Data Multilingual search | Ontology Engineering Group</p>
+        </div>
+      </div>
+    </nav>
+  
+	 <!--  info -->
+	<div class="row">
+	  <div class="col-md-4 col-md-offset-3">
+		<p class="info-result" th:text="'You searched the translation for the term  ' + ${searchQuery.term} + '  from ' + ${searchQuery.langSource} + ' to ' + ${searchQuery.langTarget}" />
+	  </div>
+	</div>
+	
+	<div class="row">
+	  <div class="col-md-4 col-md-offset-3">
+        <p>
        <a th:href="@{/search}">New search</a>
-    </p>
-    <p th:text="'You searched the translation for the term ' + ${searchQuery.term} + ' from ' + ${searchQuery.langSource} + ' to ' + ${searchQuery.langTarget}" />
-    <table>
-    <thead>
-      <tr>
-        <th>Translated label</th>
-        <th>Translation language</th>
-        <th>Part of Speech</th> 
-        <th th:if="${searchQuery.babelnet}" >BabelNet sysnset</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="trans : ${translations}" >
-        <td th:text="${trans.writtenRepTarget}" ></td>
-        <td th:text="${trans.langTarget}" ></td>
-        <td th:text="${trans.partOfSpeech}" ></td>
-        <td th:if="${searchQuery.babelnet}" ><a th:href="${trans.babelnetSynset}" th:text="${trans.babelnetSynset}"></a></td>
-      </tr>
-    </tbody>
-  </table>
-</body>
+		</p>
+        
+	  </div>
+	</div>
+	
+	
+	
+	
+	  <!-- results header -->
+      <div class="row">
+        <div class="col-md-2 col-md-offset-3">
+           <h3>Translated label</h3>
+        </div>
+
+        <div class="col-md-2">
+			<h3>Translation language</h3>      
+        </div>
+		
+		<div class="col-md-2">
+			<h3>Part of Speech</h3>      
+        </div>
+		<div class="col-md-2">
+			<h3 th:if="${searchQuery.babelnet}" >BabelNet sysnset</h3>      
+        </div>
+      </div>
+		
+	<!-- results  -->
+	<div class="row" th:each="trans : ${translations}">
+        <div class="col-md-2 col-md-offset-3">
+           <p th:text="${trans.writtenRepTarget}" />
+        </div>
+
+        <div class="col-md-2">
+			 <p th:text="${trans.langTarget}"/>
+        </div>
+		
+		<div class="col-md-2">
+			 <p th:text="${trans.partOfSpeech}"/>
+        </div>
+		<div class="col-md-2">
+			 <p th:if="${searchQuery.babelnet}" ><a th:href="${trans.babelnetSynset}" th:text="${trans.babelnetSynset}"></a></p>   
+        </div>
+      </div>
+	
+   
+	   <!-- foot -->
+      <hr/>
+
+      <footer class="col-md-offset-2">
+        <p> Ontology Engineering Group </p>
+      </footer>
+	  
+   
+   
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="../static/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
 </html>

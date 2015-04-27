@@ -1,0 +1,38 @@
+
+
+
+	.contenedor-ini{
+	padding-top: 50px;
+	padding-bottom: 20px;
+	margin-bottom:30px;
+	color:inherit;
+	background-color:#eee
+	}
+	
+	.lider-header{
+	background-color:#377AAA
+	}
+	.lider-search{
+	padding-top:50px;
+	padding-bottom:10px;
+	}
+	
+	.info-error{
+	color:red
+	}
+	.info-result{
+	font-size: 25px;
+	color:#377AAA
+	}
+	.lider-brand{
+	float:left;
+	height:50px;
+	padding:15px 25px;
+	font-size:24px;
+	color:white;
+	line-height:20px}
+	.lider-brand:focus,
+	.lider-brand:hover{text-decoration:none}
+
+	
+	
