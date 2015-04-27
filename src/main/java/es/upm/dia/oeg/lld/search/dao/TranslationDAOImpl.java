@@ -3,6 +3,7 @@ package es.upm.dia.oeg.lld.search.dao;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,11 @@ public class TranslationDAOImpl implements TranslationDAO {
             QuerySolution result, boolean indirect, boolean babelnet) {
         final Translation trans = new Translation();
 
+        // for the demo only
+        final Random rand = new Random();
+        final float min = 0.5f;
+        final float max = 1f;
+
         try {
             // trans.setTrans(result.get("trans").toString());
             trans.setLexiconSource(result.get("lexicon_source").toString());
@@ -65,7 +71,7 @@ public class TranslationDAOImpl implements TranslationDAO {
 
             if (indirect) {
                 trans.setPivotLanguage(result.get("written_rep_pivot").asLiteral().getLanguage());
-
+                trans.setScore(rand.nextFloat() * (max - min) + min);
             }
 
         } catch (final URISyntaxException e) {

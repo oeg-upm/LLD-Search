@@ -5,10 +5,8 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Translation {
 
-    // private URI trans;
     private String langSource;
     private String langTarget;
     private URI lexiconSource;
@@ -24,82 +22,10 @@ public class Translation {
     private boolean indirect;
     private String pivotLanguage;
 
-    // private float score;
+    private float score;
 
     public Translation() {
     }
-
-    // public Translation(String id, Map<String, Object> source) {
-    // this.trans = id;
-    // this.lexiconSource = source.get("lexicon_source").toString();
-    // this.lexiconTarget = source.get("lexicon_target").toString();
-    // this.senseSource = source.get("sense_source").toString();
-    // this.senseTarget = source.get("sense_target").toString();
-    // this.writtenRepSource = source.get("written_rep_source").toString();
-    // this.writtenRepTarget = source.get("written_rep_target").toString();
-    // this.partOfSpeech = source.get("POS").toString();
-    // }
-
-    /**
-     * @return the direct
-     */
-    public final boolean isIndirect() {
-        return this.indirect;
-    }
-
-    /**
-     * @param direct
-     *            the direct to set
-     */
-    public final void setIndirect(boolean indirect) {
-        this.indirect = indirect;
-    }
-
-    /**
-     * @return the pivotLanguage
-     */
-    public final String getPivotLanguage() {
-        return this.pivotLanguage;
-    }
-
-    /**
-     * @param pivotLanguage
-     *            the pivotLanguage to set
-     */
-    public final void setPivotLanguage(String pivotLanguage) {
-        this.pivotLanguage = pivotLanguage;
-    }
-
-    // /**
-    // * @return the score
-    // */
-    // public final float getScore() {
-    // return score;
-    // }
-    //
-    // /**
-    // * @param score
-    // * the score to set
-    // */
-    // public final void setScore(float score) {
-    // this.score = score;
-    // }
-
-    // /**
-    // * @return the trans
-    // */
-    // public final URI getTrans() {
-    // return this.trans;
-    // }
-    //
-    // /**
-    // * @param trans
-    // * the trans to set
-    // * @throws URISyntaxException
-    // */
-    // public final void setTrans(String trans) throws URISyntaxException {
-    // this.trans = new URI(trans);
-    // }
 
     /**
      * @return the lexiconSource
@@ -225,6 +151,51 @@ public class Translation {
      */
     public final void setBabelnetSynset(String babelnetSynset) {
         this.babelnetSynset = babelnetSynset;
+    }
+
+    /**
+     * @return the direct
+     */
+    public final boolean isIndirect() {
+        return this.indirect;
+    }
+
+    /**
+     * @param direct
+     *            the direct to set
+     */
+    public final void setIndirect(boolean indirect) {
+        this.indirect = indirect;
+    }
+
+    /**
+     * @return the pivotLanguage
+     */
+    public final String getPivotLanguage() {
+        return this.pivotLanguage;
+    }
+
+    /**
+     * @param pivotLanguage
+     *            the pivotLanguage to set
+     */
+    public final void setPivotLanguage(String pivotLanguage) {
+        this.pivotLanguage = pivotLanguage;
+    }
+
+    /**
+     * @return the score
+     */
+    public final float getScore() {
+        return this.score;
+    }
+
+    /**
+     * @param score
+     *            the score to set
+     */
+    public final void setScore(float score) {
+        this.score = score;
     }
 
     @Override

@@ -16,6 +16,7 @@
         <th>Translated label</th>
         <th>Translation language</th>
         <th>Pivot language</th>
+        <th>Translation score</th>
         <th>Part of Speech</th>
         <th th:if="${searchQuery.babelnet}" >BabelNet sysnset</th> 
       </tr>
@@ -25,6 +26,7 @@
         <td th:text="${trans.writtenRepTarget}" ></td>
         <td th:text="${trans.langTarget}" ></td>
         <td th:text="${trans.pivotLanguage}" ></td>
+        <td th:text="${trans.score}" ></td>
         <td th:text="${trans.partOfSpeech}" ></td>
         <td th:if="${searchQuery.babelnet}" ><a th:href="${trans.babelnetSynset}" th:text="${trans.babelnetSynset}"></a></td>
       </tr>
