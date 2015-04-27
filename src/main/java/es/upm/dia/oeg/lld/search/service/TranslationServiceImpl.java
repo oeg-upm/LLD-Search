@@ -24,8 +24,8 @@ public class TranslationServiceImpl implements TranslationService {
     @Override
     public List<String> getLanguages() {
         final List<String> languages = new ArrayList<String>();
-        // First option is all languages (no restriction)
-        languages.add("All");
+        // // First option is all languages (no restriction)
+        // languages.add("All");
 
         languages.addAll(this.translationDAO.getLanguages());
 

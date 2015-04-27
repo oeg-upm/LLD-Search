@@ -10,29 +10,31 @@
     <table>
             <tr>
                 <td>Search term: </td>
-                <td><input type="text" th:field="*{term}" placeholder="term" /></td>
-                <td><p th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></p></td>
+                <td><input type="text" th:field="*{term}" placeholder="term to be translated" /></td>
+                <td th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></td>
             </tr>
             <tr>
-                <td>Term language: </td> 
+                <td>Input language: </td> 
                 <td><select th:field="*{langSource}" name="language">
-                        <option th:each="lang : ${languages}" 
+                        <option value="" >-- select an option --</option>
+                        <option th:each="lang : ${languagesFrom}" 
                                 th:value="${lang}" 
                                 th:text="${lang}">
                         </option>
                     </select>
                 </td>
+                <td th:if="${#fields.hasErrors('langSource')}" th:errors="*{langSource}"></td>
             </tr>
             <tr>
-                <td>Get translation in language:</td>
+                <td>Translation language:</td>
                 <td><select th:field="*{langTarget}">
-                        <option th:each="langT : ${languages}" 
+                        <option th:each="langT : ${languagesTo}" 
                                 th:value="${langT}" 
                                 th:text="${langT}">
                         </option>
                     </select>
                 </td>
-                <td><p th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></p></td>
+                <td th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></td>
             </tr>
             <tr>
                 <td>Get babelnet synsets: </td>
@@ -43,10 +45,10 @@
                 <td><input type="checkbox" th:field="*{indirect}" /></td>
             </tr>
             <tr>
-                <td>Select pivot language (optional): </td> 
+                <td>Set pivot language (optional): </td> 
                 <!-- <td><input type="text" th:field="*{langSource}" /></td> -->
                 <td><select th:field="*{pivotLanguage}" >
-                        <option th:each="langP : ${languages}" 
+                        <option th:each="langP : ${languagesTo}" 
                                 th:value="${langP}" 
                                 th:text="${langP}">
                         </option>

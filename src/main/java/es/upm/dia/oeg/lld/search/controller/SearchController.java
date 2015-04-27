@@ -1,5 +1,6 @@
 package es.upm.dia.oeg.lld.search.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -26,13 +27,24 @@ public class SearchController {
     @Autowired
     SearchQueryValidator sqValidator;
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public String searchForm(Model model) {
+    private void initLists(Model model) {
         final List<String> languages = this.translationService.getLanguages();
+        final List<String> languagesTo = new ArrayList<String>();
+
+        // // First option is all languages (no restriction)
+        languagesTo.add("All");
+        languagesTo.addAll(languages);
+
         // final List<Dictionary> dictionaries =
         // this.translationService.getDictionaries();
-        model.addAttribute("languages", languages);
+        model.addAttribute("languagesFrom", languages);
+        model.addAttribute("languagesTo", languagesTo);
         // model.addAttribute("dictionaries", dictionaries);
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public String searchForm(Model model) {
+        initLists(model);
         model.addAttribute("searchQuery", new SearchQuery());
         return "search-form";
     }
@@ -46,8 +58,7 @@ public class SearchController {
         this.sqValidator.validate(searchQuery, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("languages",
-                    this.translationService.getLanguages());
+            initLists(model);
             return "search-form";
         }
 
