@@ -27,20 +27,7 @@ public class SearchController {
     @Autowired
     SearchQueryValidator sqValidator;
 
-    private void initLists(Model model) {
-        final List<String> languages = this.translationService.getLanguages();
-        final List<String> languagesTo = new ArrayList<String>();
-
-        // // First option is all languages (no restriction)
-        languagesTo.add("All");
-        languagesTo.addAll(languages);
-
-        // final List<Dictionary> dictionaries =
-        // this.translationService.getDictionaries();
-        model.addAttribute("languagesFrom", languages);
-        model.addAttribute("languagesTo", languagesTo);
-        // model.addAttribute("dictionaries", dictionaries);
-    }
+    
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String searchForm(Model model) {
@@ -62,13 +49,41 @@ public class SearchController {
             return "search-form";
         }
 
-        final List<Translation> translations = this.translationService.getTranslations(searchQuery);
+        List<Translation> translations = this.translationService.getTranslations(searchQuery);
+        
+        // if is direct and has no values - only is possible if you have a target lang
+        if((translations.isEmpty()) && (!searchQuery.isIndirect()) && (!searchQuery.getLangTarget().equalsIgnoreCase("All")) ){
+        	
+        	searchQuery.setIndirect(true);
+        	translations = this.translationService.getTranslations(searchQuery);
+        	model.addAttribute("translations", translations);
+        	return "results-indirect";
+        	
+        }
+        
+        
         model.addAttribute("translations", translations);
 
         if (searchQuery.isIndirect()) {
             return "results-indirect";
         }
+        
+        
+        
 
         return "results-direct";
     }
+    
+    private void initLists(Model model) {
+        final List<String> languages = this.translationService.getLanguages();
+        final List<String> languagesTo = new ArrayList<String>();
+
+        // // First option is all languages (no restriction)
+        languagesTo.add("All");
+        languagesTo.addAll(languages);
+        
+        model.addAttribute("languagesFrom", languages);
+        model.addAttribute("languagesTo", languagesTo);
+    }
+    
 }

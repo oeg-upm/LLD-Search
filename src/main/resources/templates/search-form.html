@@ -13,7 +13,7 @@
     <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet"/>
 
 	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet" />
-	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="../static/js/ie-emulation-modes-warning.js"></script>
 
    
@@ -38,7 +38,7 @@
       <!-- Example row of columns -->
 	  <div class="row lider-search">
         
-	  <div class="col-md-4 col-md-offset-4">
+	  <div class="col-md-4 col-md-offset-2">
         
         <div class="input-group">
                 <span class="input-group-addon" >Search</span>
@@ -57,7 +57,7 @@
 	  </div>
 	  <div class="row">
 
-	  <div class="col-md-4 col-md-offset-4">
+	  <div class="col-md-4 col-md-offset-2">
          <p class="info-error" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></p>
 
 	  </div>
@@ -65,8 +65,8 @@
       
 	  <!-- options -->
       <div class="row">
-        <div class="col-md-3 col-md-offset-4">
-            <p>Input language: 
+        <div class="col-md-3 col-md-offset-2">
+            <p>Source language: 
 			<select th:field="*{langSource}" name="language">
                         <option value="" >- select option -</option>
                         <option th:each="lang : ${languagesFrom}" 
@@ -84,8 +84,8 @@
 	 </div>	
 	 
 	 <div class="row">
-        <div class="col-md-3 col-md-offset-4">
-		 <p>Translation Language: 
+        <div class="col-md-3 col-md-offset-2">
+		 <p>Target Language: 
 				<select th:field="*{langTarget}">
                         <option th:each="langT : ${languagesTo}" 
                                 th:value="${langT}" 
@@ -99,18 +99,22 @@
 		<div class="col-md-2"> 
 			<p  class="info-error" th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></p>
 		</div>
-	   </div>	
+	   </div>
 	   
 	   <div class="row">
-        <div class="col-md-4 col-md-offset-4">
-		
-		
-                <p>Get babelnet synsets: <input type="checkbox" th:field="*{babelnet}" /></p>
+        <div class="col-md-3 col-md-offset-2">
+        	<p>Get babelnet synsets: <input type="checkbox" th:field="*{babelnet}" /></p>
+		 </div>
+	   </div>	
+	   
+
+	   <div class="row" id='advancedOptions'>
+        <div class="col-md-4 col-md-offset-2">
            
                 <p>Get indirect translations (not compatible with "All"
 					option for target language): <input type="checkbox" th:field="*{indirect}" /></p>
             
-                <!--p><input type="submit" value="Search" /> <input type="reset" value="Reset" /></p-->
+                
 				<p> Set pivot language (optional): <select th:field="*{pivotLanguage}" >
                         <option th:each="langP : ${languagesTo}" 
                                 th:value="${langP}" 
@@ -121,31 +125,70 @@
 				</p>
             
         </div>
-		
-		
-		
+      </div>
+	  
+	  <div class="row">
+        <div class="col-md-4 col-md-offset-2">
+			<p style="text-align:right;"> <a href='#' class='advanced' >More Options</a></p>
+		</div>
       </div>
 		
 	
 	  
 	  </form>
-      <hr/>
-
-      <footer class="col-md-offset-2">
-        <p> Ontology Engineering Group </p>
+	  
+	  
+     
+	  <br/><br/><br/><br/><br/><br/>
+	
+	  <hr/>	
+      <footer  class="col-md-offset-2">
+		
+		Ontology Engineering Group 
+        
       </footer>
 	  
     <!-- /container -->
-    
-    
-	<script type="text/javascript">
+    <script type='text/javascript'>
+    $(document).ready(function () {
+        $('#advancedOptions').hide();
+        $('.advanced').click(function() {
+            if ($('#advancedOptions').is(':hidden')) {
+                 $('#advancedOptions').slideDown();
+            } else {
+                 $('#advancedOptions').slideUp();
+            }
+        });
+    });
+	</script>
+
+    <!--script type="text/javascript">
+   function toggle_visibility(id) {
+       var e = document.getElementById(id);
+       if(e.style.display == 'block')
+          e.style.display = 'none';
+       else
+          e.style.display = 'block';
+   }
+	</script-->
+	<!--script type="text/javascript">
     $('language').onchange = filterDictionaries;
-    
     function filterDictionaries() {
     	$.getJSON()
     }
-    </script>
+    </script-->
 
+	<!-- Hide show indirect translations- -->
+	<!--script type="text/javascript">
+	$(document).ready(function(){
+	    $("#hide").click(function(){
+	        $("p").hide();
+	    });
+	    $("#show").click(function(){
+	        $("p").show();
+	    });
+	});
+	</script-->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -154,5 +197,7 @@
     <script src="../static/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+	
+	
   </body>
 </html>

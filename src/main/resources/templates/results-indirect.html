@@ -9,7 +9,6 @@
     
     <!-- Custom styles for this template -->
     <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet"/>
-	
     <script src="../static/js/ie-emulation-modes-warning.js"></script>
   </head>
 
@@ -26,13 +25,22 @@
   
 	 <!--  info -->
 	<div class="row">
-	  <div class="col-md-4 col-md-offset-3">
-		<p class="info-result" th:text="'You searched the translation for the term ' + ${searchQuery.term} + ' from ' + ${searchQuery.langSource} + ' to ' + ${searchQuery.langTarget}" />
+	  <div class="col-md-2 col-md-offset-2">
+		<p class="info-resultstatic" >Translations for: </p>
+	  <!--p class="info-result" th:text="'Translations for:     ' + ${searchQuery.term} + ' ' " /> <img src="#" th:src="@{'/icon/' +  ${searchQuery.langSource}} + '.png'"/-->
+		<!--p class="info-result" th:text="'You searched the translation for the term  ' + ${searchQuery.term} + '  from ' + ${searchQuery.langSource} + ' to ' + ${searchQuery.langTarget}" /-->
+		
+	  </div>
+	  <div class="col-md-1">
+		<p style="text-align:right;" class="info-result" th:text="${searchQuery.term}  " /> 
+	  </div>
+	  <div class="col-md-1">
+		<img src="#" th:src="@{'/icon/' +  ${searchQuery.langSource}} + '.png'"/>
 	  </div>
 	</div>
 	
 	<div class="row">
-	  <div class="col-md-4 col-md-offset-3">
+	  <div class="col-md-4 col-md-offset-2">
         <p>
        <a th:href="@{/search}">New search</a>
 		</p>
@@ -41,10 +49,60 @@
 	</div>
 	
 	
+	<!--TABLE RESULTS -->
+	<div class="row" > 
+	  
+	 <div class="col-md-6 col-md-offset-2">
+	 <table class="table "> 
+		 <thead>
+			 <tr>
+				 <th>Translation</th>
+				 <th>Lang</th>
+				 <th>Pivot Lang</th>
+				 <th>Score</th>
+				 <th>POS</th> 
+				 <th th:if="${searchQuery.babelnet}" >BabelNet sysnset</th>   
+			 </tr>
+		 </thead>
+		 
+		 
+		 <tbody>
+		 
+		 <tr  th:each="trans : ${translations}">
+			<td>
+			   <p th:text="${trans.writtenRepTarget}" />
+			</td>
+
+			<td >
+			 <img src="#" th:src="@{'/icon/' +  ${trans.langTarget}} + '.png'" /> <p th:text="${trans.langTarget}" />
+			</td>
+			
+			<td >
+			 <img src="#" th:src="@{'/icon/' +  ${trans.pivotLanguage}} + '.png'" /> <p th:text="${trans.pivotLanguage}" />
+			</td>
+			
+			<td>
+				 <p th:text="${trans.score}"/>
+			</td>
+			
+			<td>
+				 <p th:text="${trans.partOfSpeech}"/>
+			</td>
+			
+			
+			<td>
+				 <p th:if="${searchQuery.babelnet}" ><a th:href="${trans.babelnetSynset}" th:text="${trans.babelnetSynset}"></a></p>   
+			</td>
+		  </tr>
+		 </tbody>
+	 </table>
+	 </div>
+	</div>
+	
 	
 	
 	  <!-- results header -->
-      <div class="row">
+      <!--div class="row">
         <div class="col-md-1 col-md-offset-2">
            <h4>Translated label</h4>
         </div>
@@ -53,7 +111,7 @@
 			<h4>Translation language</h4>      
         </div>
 		
-		<!-- new-->
+		
 		<div class="col-md-1">
 			<h4>Pivot language</h4>      
         </div>
@@ -61,17 +119,17 @@
 			<h4>Translation score
 			(mocked value)</h4>      
         </div>
-		<!-- new-->
+		
 		<div class="col-md-1">
 			<h4>Part of Speech</h4>      
         </div>
 		<div class="col-md-1">
 			<h4 th:if="${searchQuery.babelnet}" >BabelNet sysnset</h4>      
         </div>
-      </div>
+      </div-->
 		
 	<!-- results  -->
-	<div class="row" th:each="trans : ${translations}">
+	<!--div class="row" th:each="trans : ${translations}">
         <div class="col-md-1 col-md-offset-2">
            <p th:text="${trans.writtenRepTarget}" />
         </div>
@@ -79,32 +137,28 @@
         <div class="col-md-1">
 			 <p th:text="${trans.langTarget}"/>
         </div>
-		<!-- new-->
 		<div class="col-md-1">
 			 <p th:text="${trans.pivotLanguage}"/>
         </div>
 		<div class="col-md-2">
 			 <p th:text="${trans.score}"/>
-        </div>
-		<!-- new-->
-		
-		
+        </div>		
 		<div class="col-md-1">
 			 <p th:text="${trans.partOfSpeech}"/>
         </div>
 		<div class="col-md-1">
 			 <p th:if="${searchQuery.babelnet}" ><a th:href="${trans.babelnetSynset}" th:text="${trans.babelnetSynset}"></a></p>   
         </div>
-      </div>
+      </div-->
 	
    
 	   <!-- foot -->
-      <hr/>
-
-      <footer class="col-md-offset-2">
-        <p> Ontology Engineering Group </p>
+      <br/><br/><br/><br/><br/><br/>
+	
+	  <hr/>	
+      <footer  class="col-md-offset-2">
+		Ontology Engineering Group 
       </footer>
-	  
    
    
 

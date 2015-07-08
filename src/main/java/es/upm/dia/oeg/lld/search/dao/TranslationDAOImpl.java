@@ -2,28 +2,68 @@ package es.upm.dia.oeg.lld.search.dao;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
+
+
+
+import java.util.Set;
+
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermFilterBuilder;
 import org.springframework.stereotype.Component;
-
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.query.ResultSet;
-
+import org.elasticsearch.search.SearchHit;
 import es.upm.dia.oeg.lld.search.model.Translation;
-import es.upm.dia.oeg.lld.search.utils.AppConstants;
 
 @Component
 public class TranslationDAOImpl implements TranslationDAO {
 
+	/**
+	 *  Get all dictionaries 
+	 */
     @Override
     public List<String> getLanguages() {
 
-        final String queryString = AppConstants.GET_ALL_LANGUAGES_QUERY;
+    	
+    	Client client= ElasticsSearchAccess.startClient();
+    	
+   	 String guery="{" +
+   		        "  \"query\": { \"match_all\": {} }" +
+   		        "}";
+   		        
+   	 SearchRequestBuilder sRequestBuilder = client.prepareSearch(guery);//
+   	 sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
+   	 sRequestBuilder.setTypes("language");
+   	 sRequestBuilder.setSize(500);
+
+   	 SearchResponse response = sRequestBuilder.execute().actionGet();
+
+   	 final List<String> languages = new ArrayList<String>();
+   		        
+   	 for (SearchHit se : response.getHits().getHits()){
+   		 
+   		  languages.add(se.getSource().get("lang").toString());
+   		  
+   		            
+   	 }
+   	
+   		        
+       ElasticsSearchAccess.closeClient();
+   	
+       return languages;
+       
+       
+    }
+
+    /*
+      final String queryString = AppConstants.GET_ALL_LANGUAGES_QUERY;
 
         final Query query = QueryFactory.create(queryString);
 
@@ -43,35 +83,47 @@ public class TranslationDAOImpl implements TranslationDAO {
         qe.close();
 
         return languages;
-    }
-
-    private final Translation createTranslation(String label, String lang,
-            QuerySolution result, boolean indirect, boolean babelnet) {
+     * */
+    
+    
+    /**
+     * Create translation from searchhit from elasticsearch
+     * @param se
+     * @param indirect
+     * @param babelnet
+     * @return
+     */
+    private final Translation createTranslationFromSearchHit(SearchHit se, boolean indirect, boolean babelnet) {
         final Translation trans = new Translation();
 
         // for the demo only
         final Random rand = new Random();
         final float min = 0.5f;
         final float max = 1f;
-
+        
         try {
-            // trans.setTrans(result.get("trans").toString());
-            trans.setLexiconSource(result.get("lexicon_source").toString());
-            trans.setLexiconTarget(result.get("lexicon_target").toString());
-            trans.setWrittenRepSource(label);
-            trans.setWrittenRepTarget(result.get("written_rep_target").asLiteral().getLexicalForm());
-            trans.setLangSource(lang);
-            trans.setLangTarget(result.get("written_rep_target").asLiteral().getLanguage());
-            trans.setPartOfSpeech(result.get("POS").toString());
+         
+            trans.setLexiconSource(se.getSource().get("lexicon_source").toString());
+            trans.setLexiconTarget(se.getSource().get("lexicon_target").toString());
+            
+            trans.setWrittenRepSource(se.getSource().get("source_word").toString());
+            trans.setWrittenRepTarget(se.getSource().get("target_word").toString());
+            
+            trans.setLangSource(se.getSource().get("source_lang").toString());
+            trans.setLangTarget(se.getSource().get("target_lang").toString());
+            
+            trans.setPartOfSpeech(se.getSource().get("POS").toString());
             trans.setIndirect(indirect);
 
-            if (babelnet && (result.get("babelnet") != null)) {
-                trans.setBabelnetSynset(result.get("babelnet").toString());
+            if (babelnet && (se.getSource().get("babelnet").toString()) != null) {
+                trans.setBabelnetSynset(se.getSource().get("babelnet").toString());
             }
 
             if (indirect) {
-                trans.setPivotLanguage(result.get("written_rep_pivot").asLiteral().getLanguage());
+            	/********** MOCKED VALUE *********/
                 trans.setScore(rand.nextFloat() * (max - min) + min);
+                trans.setPivotLanguage(se.getSource().get("pivot_lang").toString());
+                
             }
 
         } catch (final URISyntaxException e) {
@@ -80,114 +132,139 @@ public class TranslationDAOImpl implements TranslationDAO {
         return trans;
     }
 
-    private final List<Translation> getTranslations(String label,
-            String langSource, String queryString, boolean indirect,
-            boolean babelnet) {
+    /** Execute the elasticsearch query and return the results in a list of translations
+     * @param sRequestBuilder
+     * @param indirect
+     * @param babelnet
+     * @return
+     */
+    private final List<Translation> extractTranslationsFromES(
+    		
+    	SearchRequestBuilder sRequestBuilder, boolean indirect, boolean babelnet) {
+    	
+    	SearchResponse response = sRequestBuilder.execute().actionGet();
+    	final List<Translation> translations = new ArrayList<Translation>();
 
-        final Query query = QueryFactory.create(queryString);
-
-        // Execute the query and obtain results
-        final QueryExecution qe = QueryExecutionFactory.sparqlService(
-                AppConstants.SPARQL_ENDPOINT, query);
-
-        final ResultSet results = qe.execSelect();
-
-        final List<Translation> translations = new ArrayList<Translation>();
-
-        while (results.hasNext()) {
-            final QuerySolution result = results.next();
-            final Translation trans = createTranslation(label, langSource,
-                    result, indirect, babelnet);
+        for (SearchHit se : response.getHits().getHits()){
+        	
+            Translation trans = createTranslationFromSearchHit(se, indirect, babelnet);
             translations.add(trans);
         }
-
-        qe.close();
-
+    	
+        ElasticsSearchAccess.closeClient();
+        
+        if(!babelnet){
+        	
+        	return cleanDuplicates(translations);
+        }
         return translations;
     }
+    
+    
 
+    
+
+    /** 
+     * Elasticsearch access for direct translation queries
+     * 
+     */
     @Override
-    public List<Translation> searchDirectTranslations(String label,
-            String langSource, String langTarget, boolean babelnet) {
+    public List<Translation> searchDirectTranslations(String label,String langSource, String langTarget, boolean babelnet) {
 
-        // The written representation at SPARQL endpoint is encoded like:
-        // "bank"@en
-        final String writtenRep = "\"" + label + "\"@" + langSource;
+    	SearchRequestBuilder sRequestBuilder;
 
-        // Text in the query has to be between "", need to add & escape them.
-        langSource = "\"" + langSource + "\"";
-
-        String queryString;
-
-        // SPARQL query differs if target language is a restriction
+        // TO ALL POSSIBLE LANGUAGES
         if (langTarget == null) {
-            if (babelnet) {
-                queryString = String.format(
-                        AppConstants.GET_DIRECT_TRANSLATIONS_ALL_LANGUAGES_BABELNET,
-                        writtenRep, langSource, langSource);
-            } else {
-                queryString = String.format(
-                        AppConstants.GET_DIRECT_TRANSLATIONS_ALL_LANGUAGES,
-                        writtenRep, langSource, langSource);
-            }
+            
+        	TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
+
+            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(
+            		QueryBuilders.termQuery("source_word", label),fil);
+            
+     
+            sRequestBuilder = ElasticsSearchAccess.startClient().prepareSearch().setQuery(builder);//
+            sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
+            sRequestBuilder.setTypes("translation");
+            sRequestBuilder.setSize(1000);
+        
+        // TO A ONLY ONE LANGUAGE  
         } else {
-            langTarget = "\"" + langTarget + "\"";
+            
+        	TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
+            TermFilterBuilder fil2= FilterBuilders.termFilter("target_lang",langTarget);
 
-            if (babelnet) {
-                queryString = String.format(
-                        AppConstants.GET_DIRECT_TRANSLATIONS_ONE_LANGUAGE_BABELNET,
-                        writtenRep, langSource, langTarget, langSource);
-            } else {
-                queryString = String.format(
-                        AppConstants.GET_DIRECT_TRANSLATIONS_ONE_LANGUAGE,
-                        writtenRep, langSource, langTarget, langSource);
-            }
+            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),
+            		FilterBuilders.andFilter(fil).add(fil2));
+            
+     
+            sRequestBuilder = ElasticsSearchAccess.startClient().prepareSearch().setQuery(builder);//
+            sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
+            sRequestBuilder.setTypes("translation");
+            sRequestBuilder.setSize(1000);
+            
+        	
         }
-
-        return getTranslations(label, langSource, queryString, false, babelnet);
+        
+        List<Translation> ListRes = extractTranslationsFromES(sRequestBuilder, false, babelnet);
+        return ListRes;
     }
-
+    
+    
+   
+    /** 
+     * Elasticsearch access for Indirect translation queries
+     * 
+     */
     @Override
-    public List<Translation> searchIndirectTranslations(String label,
-            String langSource, String langTarget, String langPivot,
+    public List<Translation> searchIndirectTranslations(String label, String langSource, String langTarget, String langPivot,
             boolean babelnet) {
 
-        // The written representation at SPARQL endpoint is encoded like:
-        // "bank"@en
-        final String writtenRep = "\"" + label + "\"@" + langSource;
-
-        // Text in the query has to be between "", need to add & escape them.
-        langSource = "\"" + langSource + "\"";
-        langTarget = "\"" + langTarget + "\"";
-
-        String queryString;
-
-        // SPARQL query differs if target language is a restriction
-        if (babelnet) {
-            if (langPivot != null) {
-                langPivot = "\"" + langPivot + "\"";
-                queryString = String.format(
-                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_WITH_PIVOT_BABELNET,
-                        writtenRep, langPivot, langTarget);
-            } else {
-                queryString = String.format(
-                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_BABELNET,
-                        writtenRep, langTarget, langSource, langTarget);
-            }
+        
+    	List<Translation> listResults= new ArrayList<Translation>();
+    	
+        if (langPivot != null) {
+        	listResults=IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,langPivot, langTarget);
+        	
+        	
+             
         } else {
-            if (langPivot != null) {
-                langPivot = "\"" + langPivot + "\"";
-                queryString = String.format(
-                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE_WITH_PIVOT,
-                        writtenRep, langPivot, langTarget);
-            } else {
-                queryString = String.format(
-                        AppConstants.GET_INDIRECT_TRANSLATIONS_ONE_LANGUAGE,
-                        writtenRep, langTarget, langSource, langTarget);
-            }
+        	
+        	String [] pivotLangs = IndirectTranslation.getPivotLang(langSource);
+        	for(String pivL: pivotLangs){
+        		listResults.addAll(IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,pivL, langTarget));
+        		
+        	}        
         }
 
-        return getTranslations(label, langSource, queryString, true, babelnet);
+        return listResults;
+    
     }
+    
 
+    public List<Translation> cleanDuplicates(List <Translation> lista ){
+    	
+    	List <Translation> newLista= new ArrayList<Translation>();
+    	Set <String> set= new HashSet<String>();
+    	
+    	for (Translation t: lista){
+    		
+    		String text= t.getWrittenRepTarget()+"@"+t.getLangTarget();
+    		
+    		if(!set.contains(text)){
+    			set.add(text);
+    			newLista.add(t);
+    			
+    		}
+    		
+    	}
+    	
+    	return newLista;
+    	
+    }
+    
+   
+    
+   
+   
+    
 }

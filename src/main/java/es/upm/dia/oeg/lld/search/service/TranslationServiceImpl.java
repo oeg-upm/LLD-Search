@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import es.upm.dia.oeg.lld.search.dao.DictionaryDAO;
 import es.upm.dia.oeg.lld.search.dao.TranslationDAO;
-import es.upm.dia.oeg.lld.search.model.Dictionary;
 import es.upm.dia.oeg.lld.search.model.SearchQuery;
 import es.upm.dia.oeg.lld.search.model.Translation;
 
@@ -25,13 +24,11 @@ public class TranslationServiceImpl implements TranslationService {
     public List<String> getLanguages() {
         final List<String> languages = new ArrayList<String>();
         // // First option is all languages (no restriction)
-        // languages.add("All");
-
         languages.addAll(this.translationDAO.getLanguages());
-
         return languages;
     }
 
+    /*
     private List<Dictionary> getDictionariesHardcoded() {
         final List<Dictionary> dictionaries = new ArrayList<Dictionary>();
         dictionaries.add(new Dictionary("ca", "it"));
@@ -59,13 +56,15 @@ public class TranslationServiceImpl implements TranslationService {
 
         return dictionaries;
     }
+    */
 
+    /*
     @Override
     public List<Dictionary> getDictionaries() {
-        // return this.dictionaryDAO.getDictionaries();
-        return getDictionariesHardcoded();
+        return this.dictionaryDAO.getDictionaries();
+        //return getDictionariesHardcoded();
     }
-
+*/
     @Override
     public List<Translation> getTranslations(SearchQuery searchQuery) {
 
