@@ -2,6 +2,8 @@ package es.upm.dia.oeg.lld.search.model;
 
 import javax.validation.constraints.NotNull;
 
+import es.upm.dia.oeg.lld.search.service.TranslationService;
+
 public class SearchQuery {
 
     @NotNull
@@ -18,6 +20,19 @@ public class SearchQuery {
     private boolean babelnet;
 
     private boolean indirect;
+    
+    // languages codes
+    private String langSourceCode;
+    
+    private String langTargetCode;
+    
+    private String pivotLanguageCode;
+    
+    //private static boolean isExecuted;
+    
+    
+    
+    
 
     /**
      * @return the query
@@ -108,4 +123,63 @@ public class SearchQuery {
     public final void setPivotLanguage(String pivotLanguage) {
         this.pivotLanguage = pivotLanguage;
     }
+    
+    // look for the codes
+    public final void setCodeLanguages(TranslationService translationService) {
+       
+    	String langCode1= translationService.getLanguageCode(this.getLangSource());
+    	String langCode2=translationService.getLanguageCode(this.getLangTarget());
+    	String langCode3=translationService.getLanguageCode(this.getPivotLanguage());
+    	
+    	this.setLangSourceCode(langCode1);
+    	this.setLangTargetCode(langCode2);
+    	this.setPivotLanguageCode(langCode3);
+    	
+    }
+    
+    // GETTER AND SETTER FOR LANG CODES
+    public String getLangSourceCode() {
+		return langSourceCode;
+	}
+
+	public void setLangSourceCode(String langSourceCode) {
+		this.langSourceCode = langSourceCode;
+	}
+
+	public String getLangTargetCode() {
+		return langTargetCode;
+	}
+
+	public void setLangTargetCode(String langTargetCode) {
+		this.langTargetCode = langTargetCode;
+	}
+
+	public String getPivotLanguageCode() {
+		return pivotLanguageCode;
+	}
+
+	public void setPivotLanguageCode(String pivotLanguageCode) {
+		this.pivotLanguageCode = pivotLanguageCode;
+	}
+
+	// not working (the funcionality of the variable)
+	/*
+
+	public final boolean isExecuted() {
+		return isExecuted;
+	}
+
+
+	public static void setExecuted(boolean isExecuted) {
+		SearchQuery.isExecuted = isExecuted;
+	}
+	*/
+
+	
+    
+    
+    
+    
+
+	
 }

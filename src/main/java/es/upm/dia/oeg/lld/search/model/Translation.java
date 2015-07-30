@@ -5,7 +5,7 @@ import java.net.URISyntaxException;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class Translation {
+public class Translation implements Comparable<Translation> {
 
     private String langSource;
     private String langTarget;
@@ -202,4 +202,17 @@ public class Translation {
     public final String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
+	@Override
+	public int compareTo(Translation o) {
+
+            if (score < o.score) {
+                return 1;
+            }
+            if (score > o.score) {
+                return -1;
+            }
+            return 0;
+       
+	}
 }

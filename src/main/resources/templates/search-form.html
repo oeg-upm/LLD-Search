@@ -1,203 +1,342 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-  <head>
+
+<head>
 
 
     <title>Lider search</title>
+	
+	<link rel="shortcut icon" th:href="@{/icon/logo/apertiumico.ico}" />
 
     <!-- Bootstrap core CSS -->
-    <link href="../static/css/bootstrap.min.css"  th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet" />
 
+	<!-- Loading Flat UI -->
+    <link href="../static/css/flat-ui.min.css" th:href="@{/css/flat-ui.min.css}" rel="stylesheet"/>
 
     <!-- Custom styles for this template -->
-    <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet"/>
+    <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet" />
 
-	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet" />
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../static/js/ie-emulation-modes-warning.js" th:src="@{/js/ie-emulation-modes-warning.js}"></script>
 
-   
-  </head>
+	
+	<script  th:inline="javascript">
+	/*<![CDATA[*/
+		function getLangArray(){
+			 
+				var langs = /*[[${languagesMapArray}]]*/ [];
+				return langs;
+			
+			}
+	/*]]>*/
+	</script>
+	
+	<script type="text/javascript">
+			function cleanAllChilds(container) {
+				if (container) {
+					while (container.hasChildNodes()) {
+						container.removeChild(container.childNodes[0]);
+					}
+				}
+				return container;
+			}
+		</script>	
+		<script type="text/javascript">
+			/*<![CDATA[*/
+			function newpopulate(){
+				console.log('hola');
+				d=document.getElementById('targ');
+				d=cleanAllChilds(d);
+				
+				var x = document.getElementById("MySelect").value;
+							
+				var myLangs =  getLangArray(); 
+				
+				for (i = 0; i < myLangs.length; i++) { 
+					
+					if(myLangs[i].label == x){
+					console.log('encontrado '+x);
+					
+					var myTrans= myLangs[i].translationLang;
+					var myIndTrans= myLangs[i].indirectLang;
+					
+					
+					var optiongGroupContainer = document.createElement('OPTGROUP');
+					optiongGroupContainer.label = "DIRECT";
+					
+					jQuery.each(myTrans, function(id,value){
+							
+					var optionContainer = document.createElement('OPTION');
+					optionContainer.value = value;
+					optionContainer.appendChild(document.createTextNode(value));
+					optiongGroupContainer.appendChild(optionContainer);
+					});
+					d.appendChild(optiongGroupContainer);
+					
+					
+					var optiongGroupContainer2 = document.createElement('OPTGROUP');
+					optiongGroupContainer2.label = "INDIRECT";
+					
+					jQuery.each(myIndTrans, function(id2,value2){
+							
+					var optionContainer = document.createElement('OPTION');
+					optionContainer.value2 = value2;
+					optionContainer.appendChild(document.createTextNode(value2));
+					optiongGroupContainer2.appendChild(optionContainer);
+					});
+					d.appendChild(optiongGroupContainer2);
+					
+					
+					}
 
-  <body>
+					
+				}
 
-    <nav class="navbar lider-header" >
-      <div class="container">
-        <div class="navbar-header">
-  
-          <p class="lider-brand" >Linguistic Linked Data Multilingual search | Ontology Engineering Group</p>
-        </div>
-      
-      </div>
-    </nav>
+				
 
+				
+			}
+			/*]]>*/
+		</script>	
+</head>
 
-		  
-		  
-	<form th:action="@{/search}" th:object="${searchQuery}" method="post">	  
-      <!-- Example row of columns -->
-	  <div class="row lider-search">
-        
-	  <div class="col-md-4 col-md-offset-2">
-        
-        <div class="input-group">
-                <span class="input-group-addon" >Search</span>
-                  
-                  <input type="text" th:field="*{term}" class="form-control typeahead" autocomplete="off" placeholder="Term to be translated" id="search-query" />
-                  <span class="input-group-btn">
-                      <button class="btn btn-default" type="submit" ><span class="glyphicon glyphicon-search" /></button>
-                  </span>
-				  <!-- errors-->
+<body>
+
+    <div id="container">
+        <div class="row">
+            <div class="col-md-12" align="center">
+                <img  th:src="@{/icon/logo/apertiumrdflogo.png}" src="#" />
 				 
             </div>
-        
-	
-		
-	  </div>
-	  </div>
-	  <div class="row">
-
-	  <div class="col-md-4 col-md-offset-2">
-         <p class="info-error" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></p>
-
-	  </div>
-	  </div>
-      
-	  <!-- options -->
-      <div class="row">
-        <div class="col-md-3 col-md-offset-2">
-            <p>Source language: 
-			<select th:field="*{langSource}" name="language">
-                        <option value="" >- select option -</option>
-                        <option th:each="lang : ${languagesFrom}" 
-                                th:value="${lang}" 
-                                th:text="${lang}">
-                        </option>
-            </select>
-            </p>
-            
         </div>
-		<div class="col-md-2"> 
-			<p class="info-error" th:if="${#fields.hasErrors('langSource')}" th:errors="*{langSource}"></p>
-		</div>
-		
-	 </div>	
-	 
-	 <div class="row">
-        <div class="col-md-3 col-md-offset-2">
-		 <p>Target Language: 
-				<select th:field="*{langTarget}">
-                        <option th:each="langT : ${languagesTo}" 
-                                th:value="${langT}" 
-                                th:text="${langT}">
-                        </option>
-                    </select>
+		<div class="row">
+            <div class="col-md-12" align="center" >
+                <p>
+                    This interface allows you to search for direct and indirect translations within the Apertium RDF graph. <br/>
+					More information about Apertium RDF <a HREF="http://linguistic.linkeddata.es/apertium/">here</a>
                 </p>
-				
-       
-	    </div>
-		<div class="col-md-2"> 
-			<p  class="info-error" th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></p>
+            </div>
 		</div>
-	   </div>
-	   
-	   <div class="row">
-        <div class="col-md-3 col-md-offset-2">
-        	<p>Get babelnet synsets: <input type="checkbox" th:field="*{babelnet}" /></p>
-		 </div>
-	   </div>	
-	   
 
-	   <div class="row" id='advancedOptions'>
-        <div class="col-md-4 col-md-offset-2">
-           
-                <p>Get indirect translations (not compatible with "All"
-					option for target language): <input type="checkbox" th:field="*{indirect}" /></p>
-            
-                
-				<p> Set pivot language (optional): <select th:field="*{pivotLanguage}" >
-                        <option th:each="langP : ${languagesTo}" 
-                                th:value="${langP}" 
-                                th:text="${langP}">
-                        </option>
-                    </select>
+
+        <!-- FORMULARY -->
+        <form th:action="@{/search}" th:object="${searchQuery}" method="post">
+            <!-- Example row of columns -->
+            <div class="row lider-search">
+
+                <div class="col-md-4 col-md-offset-4">
+                   <div class="input-group">
+				   
+					  <input type="text" th:field="*{term}" class="form-control" autocomplete="off" placeholder="Term to be translated" id="search-query" />
+					  <span class="input-group-btn">
+						<button type="submit" class="btn"><span class="fui-search"></span></button>
+					  </span>
+					
+                  </div>
+                </div>
+            </div>
+			<!-- errors-->
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <p class="info-error" th:if="${#fields.hasErrors('term')}" th:errors="*{term}"></p>
+                </div>
+            </div>
+
+            <!-- options -->
+            <div class="row">
+                <!--div class="col-md-4 col-md-offset-4">
+                    <p>Source language:
+                        <select th:field="*{langSource}" name="language">
+                            <option value="">- select option -</option>
+                            <option th:each="lang : ${languagesFrom}" th:value="${lang}" th:text="${lang}">
+                            </option>
+                        </select>
+                    </p>
+
+                </div-->
+				<div class="col-md-4 col-md-offset-4">
+                    <p>Source language:
+                        <select th:field="*{langSource}" name="language" id="MySelect" onChange="newpopulate()">
+                            <option value="">- select option -</option>
+                            <option th:each="lang : ${languagesMapArray}" th:value="${lang.getLabel()}" th:text="${lang.getLabel()}">
+                            </option>
+                        </select>
+                    </p>
+				</div>
 				
-				</p>
-            
+                <div class="col-md-4 col-md-offset-4">
+                    <p class="info-error" th:if="${#fields.hasErrors('langSource')}" th:errors="*{langSource}"></p>
+                </div>
+
+                <!--div class="col-md-4 col-md-offset-4">
+                    <p>Target Language:
+                        <select th:field="*{langTarget}">
+                            
+                            <option th:each="langT : ${languagesTo}" th:value="${langT}" th:text="${langT}">
+                            </option>
+                        </select>
+                    </p>
+                </div-->
+				<div class="col-md-4 col-md-offset-4">
+                    <p>Target Language:
+                        <select name="targ" id="targ" th:field="*{langTarget}">
+                            
+                        </select>
+                    </p>
+                </div>
+				
+                <div class="col-md-4 col-md-offset-4">
+                    <p class="info-error" th:if="${#fields.hasErrors('langTarget')}" th:errors="*{langTarget}"></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <p>Get babelnet synsets:
+                        <input type="checkbox" th:field="*{babelnet}" />
+                    </p>
+                </div>
+            </div>
+			
+			
+
+            <div class="row" id='advancedOptions'>
+                <div class="col-md-4 col-md-offset-4">
+
+                    <p>Get indirect translations (not compatible with "All" option for target language):
+                        <input type="checkbox" th:field="*{indirect}" />
+                    </p>
+                    <p> Set pivot language (optional):
+                        <select th:field="*{pivotLanguage}">
+                            <option th:each="langP : ${languagesTo}" th:value="${langP}" th:text="${langP}">
+                            </option>
+                        </select>
+                    </p>
+                </div>
+            </div>
+			
+			<div class="row">
+				<div class="col-md-4 col-md-offset-4">
+						<div align="center"> 
+									<a href="#" class="advanced btn btn-block btn-lg btn-inverse">More options</a>
+								</div>
+						</div>
+			</div>
+	
+			<!--
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <p style="text-align:right;"> <a href='#' class='advanced'>More Options</a>
+                    </p>
+                </div>
+            </div>-->
+
+        </form>
+        <!-- END FORM -->
+		
+		
+		
+		
+		
+		<br/><br/><br/><br/><br/><br/><br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		
+		<div class="row">
+            <div class="col-md-12" align="center">
+                <h2> Learn more about the RDF Apertium graph </h2>
+            </div>
         </div>
-      </div>
-	  
-	  <div class="row">
-        <div class="col-md-4 col-md-offset-2">
-			<p style="text-align:right;"> <a href='#' class='advanced' >More Options</a></p>
+		<br/>
+		<br/>
+		<br/>
+		<div class="row">
+            <div class="col-md-12" align="center">
+                <img  th:src="@{/icon/graphlangapertium.png}" src="#" />
+            </div>
+        </div>
+		
+		
+	</div>
+
+        <br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+		<br/>
+        <!--hr/-->
+    
+
+    <footer class="footer navbar-inverse">
+      <div class="container">
+        <div class="row" style="margin-right: 0px; margin-left: 0px;">
+			<div class="col-md-4">
+					<a href="http://www.oeg-upm.net/"><img th:src="@{/icon/logo/logoOEG.png}" src="#" /></a> 
+					</div>
+			<div class="col-md-5 col-md-offset-2">
+					<h5 class="info-footer">Ontology Engineering Group</h5>
+			</div>
 		</div>
       </div>
-		
+    </footer>
+	 
 	
-	  
-	  </form>
-	  
-	  
-     
-	  <br/><br/><br/><br/><br/><br/>
-	
-	  <hr/>	
-      <footer  class="col-md-offset-2">
-		
-		Ontology Engineering Group 
+    <!--
+	<nav class="navbar navbar-inverse navbar-fixed-bottom">
         
-      </footer>
-	  
-    <!-- /container -->
+		<div class="row" style="margin-right: 0px; margin-left: 0px;">
+			<div class="col-md-4 col-md-offset-2">
+					<a href="http://www.oeg-upm.net/"><img th:src="@{/icon/logoOEG.png}" src="#" /></a>  
+					</div>
+					<div class="col-md-5 ">
+					<h5 class="info-footer">Ontology Engineering Group</h5>
+			</div>
+		</div>
+    </nav>
+	
+	
+	
+	
+	<footer class="footer">
+      <div class="container">
+        <p class="text-muted">Place sticky footer content here.</p>
+      </div>
+    </footer>
+
+     -->
     <script type='text/javascript'>
-    $(document).ready(function () {
-        $('#advancedOptions').hide();
-        $('.advanced').click(function() {
-            if ($('#advancedOptions').is(':hidden')) {
-                 $('#advancedOptions').slideDown();
-            } else {
-                 $('#advancedOptions').slideUp();
-            }
+        $(document).ready(function() {
+            $('#advancedOptions').hide();
+            $('.advanced').click(function() {
+                if ($('#advancedOptions').is(':hidden')) {
+                    $('#advancedOptions').slideDown();
+                } else {
+                    $('#advancedOptions').slideUp();
+                }
+            });
         });
-    });
-	</script>
+    </script>
 
-    <!--script type="text/javascript">
-   function toggle_visibility(id) {
-       var e = document.getElementById(id);
-       if(e.style.display == 'block')
-          e.style.display = 'none';
-       else
-          e.style.display = 'block';
-   }
-	</script-->
-	<!--script type="text/javascript">
-    $('language').onchange = filterDictionaries;
-    function filterDictionaries() {
-    	$.getJSON()
-    }
-    </script-->
-
-	<!-- Hide show indirect translations- -->
-	<!--script type="text/javascript">
-	$(document).ready(function(){
-	    $("#hide").click(function(){
-	        $("p").hide();
-	    });
-	    $("#show").click(function(){
-	        $("p").show();
-	    });
-	});
-	</script-->
+   
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="../static/js/bootstrap.min.js"></script>
+    <script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
-	
-	
-  </body>
+    <script src="../static/js/ie10-viewport-bug-workaround.js" th:src="@{/js/ie10-viewport-bug-workaround.js}"></script>
+
+
+</body>
+
 </html>

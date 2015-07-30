@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
+import es.upm.dia.oeg.lld.search.dao.ElasticsSearchAccess;
+
 @SpringBootApplication
 public class LldMultilingualSearchApplication extends
         SpringBootServletInitializer {
@@ -16,6 +18,8 @@ public class LldMultilingualSearchApplication extends
     }
 
     public static void main(String[] args) {
+    	
         SpringApplication.run(LldMultilingualSearchApplication.class, args);
+        ElasticsSearchAccess.closeClient();
     }
 }

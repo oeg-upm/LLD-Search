@@ -1,6 +1,7 @@
 
 
 
+
 	.contenedor-ini{
 	padding-top: 50px;
 	padding-bottom: 20px;
@@ -20,12 +21,19 @@
 	.info-error{
 	color:red
 	}
+	
+	.info-footer{
+	color:white
+	}
 	.info-result{
 	font-size: 25px;
 	color:#377AAA
 	}
 	.info-resultstatic{
 	font-size: 25px;
+	}
+	.info-result-row{
+		margin-top:50px;
 	}
 	
 	.lider-brand{

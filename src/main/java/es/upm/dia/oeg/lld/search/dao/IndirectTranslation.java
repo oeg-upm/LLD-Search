@@ -14,10 +14,10 @@ public class IndirectTranslation {
 	
 	public static List<Translation> searchIndirectTranslationWithPivotLang(String word,String SourceLang, String PivotLang,String TargetLang) {
 
-        Client client = ElasticsSearchAccess.startClient();
+        Client client = ElasticsSearchAccess.getInstance();//.startClient();
 
         ArrayList<TranslatablePair> translatablePairs = obtainTranslationScoresFromLemma(client, ElasticsSearchAccess.Index, word, SourceLang, PivotLang, TargetLang);
-        ElasticsSearchAccess.closeClient();
+        //ElasticsSearchAccess.closeClient();
         
         List<Translation> listResults= new ArrayList<Translation>();
         for (TranslatablePair trans: translatablePairs){

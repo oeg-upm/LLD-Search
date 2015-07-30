@@ -16,7 +16,7 @@ public class DictionaryDAOImpl implements DictionaryDAO {
     @Override
     public List<Dictionary> getDictionaries() {
     	
-    	Client client= ElasticsSearchAccess.startClient();
+    	Client client= ElasticsSearchAccess.getInstance();//.startClient();
     	
     	 String guery="{" +
     		        "  \"query\": { \"match_all\": {} }" +
@@ -41,7 +41,7 @@ public class DictionaryDAOImpl implements DictionaryDAO {
     	}
     	
     		        
-        ElasticsSearchAccess.closeClient();
+        //ElasticsSearchAccess.closeClient();
     	
         return dictionaries;
     }

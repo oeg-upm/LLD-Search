@@ -70,10 +70,13 @@ public class ElasticSearchQueries {
         Set<String> LexicalEntryList = new HashSet<String>();
 
         SearchResponse response = sRequestBuilder.execute().actionGet();
+        float score=0;
 
         for (SearchHit se : response.getHits().getHits()) {
-
-            LexicalEntryList.add(se.getSource().get("lexicalentrySource").toString());
+        	if (se.getScore()>= score){
+        		score= se.getScore();
+        		LexicalEntryList.add(se.getSource().get("lexicalentrySource").toString());
+        	}
         }
         return new ArrayList<String>(LexicalEntryList);
 

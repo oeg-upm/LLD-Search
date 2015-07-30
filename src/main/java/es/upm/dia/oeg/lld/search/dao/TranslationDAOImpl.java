@@ -2,6 +2,7 @@ package es.upm.dia.oeg.lld.search.dao;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -18,8 +19,10 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
+import org.elasticsearch.index.query.TermQueryBuilder;
 import org.springframework.stereotype.Component;
 import org.elasticsearch.search.SearchHit;
+
 import es.upm.dia.oeg.lld.search.model.Translation;
 
 @Component
@@ -32,7 +35,7 @@ public class TranslationDAOImpl implements TranslationDAO {
     public List<String> getLanguages() {
 
     	
-    	Client client= ElasticsSearchAccess.startClient();
+    	Client client= ElasticsSearchAccess.getInstance();//.startClient();
     	
    	 String guery="{" +
    		        "  \"query\": { \"match_all\": {} }" +
@@ -49,13 +52,13 @@ public class TranslationDAOImpl implements TranslationDAO {
    		        
    	 for (SearchHit se : response.getHits().getHits()){
    		 
-   		  languages.add(se.getSource().get("lang").toString());
+   		  languages.add(se.getSource().get("langExtended").toString());
    		  
    		            
    	 }
    	
    		        
-       ElasticsSearchAccess.closeClient();
+       //ElasticsSearchAccess.closeClient();
    	
        return languages;
        
@@ -121,7 +124,7 @@ public class TranslationDAOImpl implements TranslationDAO {
 
             if (indirect) {
             	/********** MOCKED VALUE *********/
-                trans.setScore(rand.nextFloat() * (max - min) + min);
+                //trans.setScore(rand.nextFloat() * (max - min) + min);
                 trans.setPivotLanguage(se.getSource().get("pivot_lang").toString());
                 
             }
@@ -144,14 +147,17 @@ public class TranslationDAOImpl implements TranslationDAO {
     	
     	SearchResponse response = sRequestBuilder.execute().actionGet();
     	final List<Translation> translations = new ArrayList<Translation>();
+    	float score=0;
 
         for (SearchHit se : response.getHits().getHits()){
-        	
-            Translation trans = createTranslationFromSearchHit(se, indirect, babelnet);
-            translations.add(trans);
+        	if(se.getScore()>=score){
+        		score= se.getScore();
+        		Translation trans = createTranslationFromSearchHit(se, indirect, babelnet);
+        		translations.add(trans);
+        	}
         }
     	
-        ElasticsSearchAccess.closeClient();
+        //ElasticsSearchAccess.closeClient();
         
         if(!babelnet){
         	
@@ -182,7 +188,7 @@ public class TranslationDAOImpl implements TranslationDAO {
             		QueryBuilders.termQuery("source_word", label),fil);
             
      
-            sRequestBuilder = ElasticsSearchAccess.startClient().prepareSearch().setQuery(builder);//
+            sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);//.startClient()
             sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
             sRequestBuilder.setTypes("translation");
             sRequestBuilder.setSize(1000);
@@ -197,7 +203,7 @@ public class TranslationDAOImpl implements TranslationDAO {
             		FilterBuilders.andFilter(fil).add(fil2));
             
      
-            sRequestBuilder = ElasticsSearchAccess.startClient().prepareSearch().setQuery(builder);//
+            sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);//.startClient()
             sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
             sRequestBuilder.setTypes("translation");
             sRequestBuilder.setSize(1000);
@@ -235,6 +241,9 @@ public class TranslationDAOImpl implements TranslationDAO {
         		
         	}        
         }
+        
+        Collections.sort(listResults);
+        
 
         return listResults;
     
@@ -259,8 +268,49 @@ public class TranslationDAOImpl implements TranslationDAO {
     	}
     	
     	return newLista;
-    	
     }
+
+	@Override
+	public String getLanguageCode(String language) {
+		
+		if (language.equals("All")){
+			
+			return "All";
+		}
+		
+		Client client= ElasticsSearchAccess.getInstance();
+    	
+	   	 String guery="{" +
+	   		        "  \"query\": { \"match_all\": {} }" +
+	   		        "}";
+	   		        
+	   	 SearchRequestBuilder sRequestBuilder = client.prepareSearch(guery);//
+	   	 sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
+	   	 sRequestBuilder.setTypes("language");
+	   	 sRequestBuilder.setSize(500);
+
+	   	 SearchResponse response = sRequestBuilder.execute().actionGet();
+
+	   
+	   	 String res="";
+	   	 for (SearchHit se : response.getHits().getHits()){
+	   		 
+	   		  if(se.getSource().get("langExtended").toString().equals(language)){
+	   			  res=se.getSource().get("lang").toString();
+	   			  return res; 
+	   		  }
+	   		  
+	   		            
+	   	 }
+	   	
+	   		        
+	       //ElasticsSearchAccess.closeClient();
+	   	
+	       return res;
+        
+ 
+        
+	}
     
    
     

@@ -10,24 +10,51 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 public class ElasticsSearchAccess {
 	
 	
-	public static final String Index="apertiumlider";
+		public static final String Index="apertiumlider";
+	    private static Client Cliente = null;
+
+	    // Private constructor suppresses 
+	    private ElasticsSearchAccess(){}
+
+	    // creador sincronizado para protegerse de posibles problemas  multi-hilo
+	    // otra prueba para evitar instanciación múltiple 
+	    private synchronized static void createInstance() {
+	        if (Cliente == null) { 
+	             Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch").build();
+	            TransportClient transportClient = new TransportClient(settings);
+	            transportClient = transportClient.addTransportAddress(new InetSocketTransportAddress("localhost", 9300)); // localhost ("localhost", 9300) 
+	            Cliente = (Client) transportClient;
+	            		
+	        }
+	    }
+
+	    public static Client getInstance() {
+	        if (Cliente == null) createInstance();
+	        return Cliente;
+	    }
+	
+	
+	
+	    public static void closeClient(){
+ 		
+	    	Cliente.close();
+	    }
+	    
     
-    public static  Client client=null;
+ /*
     
     
     public static final Client startClient(){
     	
 
-    	Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", "elasticsearch").build();
-        TransportClient transportClient = new TransportClient(settings);
-        transportClient = transportClient.addTransportAddress(new InetSocketTransportAddress("localhost", 9300)); // localhost ("localhost", 9300) 
-        client = (Client) transportClient;
-    	return client ;
+    	
     }
     
     public static final void closeClient(){
     		
     	client.close();
     }
+    
+    */
 
 }

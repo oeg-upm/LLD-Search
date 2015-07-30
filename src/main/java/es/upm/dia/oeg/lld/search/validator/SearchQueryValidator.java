@@ -26,6 +26,15 @@ public class SearchQueryValidator implements Validator {
             ValidationUtils.rejectIfEmptyOrWhitespace(errors, "langSource",
                     "required.langSource",
                     "Language of input term is required.");
+            
+            if(sq.getLangSource().contains("select")){
+            	  errors.rejectValue(
+                          "langSource",
+                          "error.langSource",
+                          "Language of input term is required.");
+              
+            	
+            }
 
             if (sq.isIndirect() && sq.getLangTarget().equalsIgnoreCase("All")) {
                 errors.rejectValue(

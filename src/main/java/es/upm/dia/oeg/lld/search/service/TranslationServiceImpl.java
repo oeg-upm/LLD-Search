@@ -28,35 +28,11 @@ public class TranslationServiceImpl implements TranslationService {
         return languages;
     }
 
-    /*
-    private List<Dictionary> getDictionariesHardcoded() {
-        final List<Dictionary> dictionaries = new ArrayList<Dictionary>();
-        dictionaries.add(new Dictionary("ca", "it"));
-        dictionaries.add(new Dictionary("en", "es"));
-        dictionaries.add(new Dictionary("en", "ca"));
-        dictionaries.add(new Dictionary("en", "gl"));
-        dictionaries.add(new Dictionary("eo", "en"));
-        dictionaries.add(new Dictionary("eo", "es"));
-        dictionaries.add(new Dictionary("eo", "ca"));
-        dictionaries.add(new Dictionary("eo", "fr"));
-        dictionaries.add(new Dictionary("es", "ca"));
-        dictionaries.add(new Dictionary("es", "gl"));
-        dictionaries.add(new Dictionary("es", "pt"));
-        dictionaries.add(new Dictionary("es", "ro"));
-        dictionaries.add(new Dictionary("es", "ast"));
-        dictionaries.add(new Dictionary("es", "an"));
-        dictionaries.add(new Dictionary("eu", "en"));
-        dictionaries.add(new Dictionary("eu", "es"));
-        dictionaries.add(new Dictionary("fr", "es"));
-        dictionaries.add(new Dictionary("fr", "ca"));
-        dictionaries.add(new Dictionary("oc", "es"));
-        dictionaries.add(new Dictionary("oc", "ca"));
-        dictionaries.add(new Dictionary("pt", "ca"));
-        dictionaries.add(new Dictionary("pt", "gl"));
-
-        return dictionaries;
+    @Override
+    public String getLanguageCode(String language) {
+        final String languageCode = this.translationDAO.getLanguageCode(language);
+        return languageCode;
     }
-    */
 
     /*
     @Override
@@ -64,12 +40,12 @@ public class TranslationServiceImpl implements TranslationService {
         return this.dictionaryDAO.getDictionaries();
         //return getDictionariesHardcoded();
     }
-*/
+     */
     @Override
     public List<Translation> getTranslations(SearchQuery searchQuery) {
 
-        String langTarget = searchQuery.getLangTarget();
-        String langPivot = searchQuery.getPivotLanguage();
+        String langTarget = searchQuery.getLangTargetCode();
+        String langPivot = searchQuery.getPivotLanguageCode();
 
         if (langTarget.equalsIgnoreCase("All")) {
             langTarget = null;
@@ -81,12 +57,12 @@ public class TranslationServiceImpl implements TranslationService {
 
         if (searchQuery.isIndirect()) {
             return this.translationDAO.searchIndirectTranslations(
-                    searchQuery.getTerm(), searchQuery.getLangSource(),
+                    searchQuery.getTerm(), searchQuery.getLangSourceCode(),
                     langTarget, langPivot, searchQuery.getBabelnet());
         }
 
         return this.translationDAO.searchDirectTranslations(
-                searchQuery.getTerm(), searchQuery.getLangSource(), langTarget,
+                searchQuery.getTerm(), searchQuery.getLangSourceCode(), langTarget,
                 searchQuery.getBabelnet());
     }
 
