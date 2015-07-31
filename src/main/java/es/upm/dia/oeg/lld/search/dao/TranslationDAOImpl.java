@@ -222,22 +222,21 @@ public class TranslationDAOImpl implements TranslationDAO {
      * 
      */
     @Override
-    public List<Translation> searchIndirectTranslations(String label, String langSource, String langTarget, String langPivot,
-            boolean babelnet) {
+    public List<Translation> searchIndirectTranslations(String label, String langSource, String langTarget, String langPivot, boolean babelnet,double threshold) {
 
         
     	List<Translation> listResults= new ArrayList<Translation>();
     	
         if (langPivot != null) {
-        	listResults=IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,langPivot, langTarget);
+        	listResults=IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,langPivot, langTarget,threshold);
         	
         	
              
         } else {
         	
-        	String [] pivotLangs = IndirectTranslation.getPivotLang(langSource);
+        	String [] pivotLangs = IndirectTranslation.getPivotLang2(langSource);
         	for(String pivL: pivotLangs){
-        		listResults.addAll(IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,pivL, langTarget));
+        		listResults.addAll(IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,pivL, langTarget,threshold));
         		
         	}        
         }

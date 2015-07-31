@@ -1,73 +1,49 @@
 package es.upm.dia.oeg.lld.search.dao;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.springframework.stereotype.Component;
 
-import es.upm.dia.oeg.lld.search.model.Dictionary;
 import es.upm.dia.oeg.lld.search.model.Language;
 
+@Component
 public class LanguageTranslationMap {
 	
 	
-	Map<String,List <String>> translationMap;
+	Language [] LanguageArray;
 	
 	public LanguageTranslationMap(){
 		
-		
+		System.out.println(">>> Constructor");
+		LanguageArray=createLanguageArray();
 	}
 	
-
 	
-	public List<String> get(String s){
-		System.out.println("this is>"+s);
-		List <String> list= translationMap.get(s);
-		System.out.println("this is>"+list.size());
-		return list;
-	}
-	
-	public String[] get2(String s){
-		System.out.println("this is >"+s);
-		List <String> list= translationMap.get(s);
-		System.out.println("this is>"+list.size());
+	public Language[] getLanguageArray(){
 		
-		return list.toArray(new String[list.size()]);
-	}
-	
-	public Language[] getLangArray(){
-		
-		
-		List <String> listaTraduciones= getLanguages();
-		
-		
-		System.out.println("this is the access >");
-		
-		List <Language> listaLang= new ArrayList<Language>();
-		
-		for (String lan: listaTraduciones){
-			listaLang.add(new Language(lan,getDirectTranslationLang(lan),getIndirectTranslationLang(lan)));
-			
+		if(LanguageArray==null){
+			LanguageArray=this.createLanguageArray();
 		}
 		
+		return LanguageArray;
 		
-		return listaLang.toArray(new Language[listaLang.size()]);
+
 	}
 	
 	
 	///// this should not be here
 	
-	public  List<String> getLanguages(){
+	public  Language[] createLanguageArray(){
         //Get document
 		
-		Client client= ElasticsSearchAccess.getInstance();//.startClient();
+		System.out.println(">>>> Server call for lang map ");
+		
+		Client client= ElasticsSearchAccess.getInstance();
     	
 	   	 String guery="{" +
 	   		        "  \"query\": { \"match_all\": {} }" +
@@ -75,93 +51,50 @@ public class LanguageTranslationMap {
 	   		        
 	   	 SearchRequestBuilder sRequestBuilder = client.prepareSearch(guery);//
 	   	 sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
-	   	 sRequestBuilder.setTypes("language");
+	   	 sRequestBuilder.setTypes("languageMap");
 	   	 sRequestBuilder.setSize(500);
 	
 	   	SearchResponse response = sRequestBuilder.execute().actionGet();
 	
-	   	final List<String> langsList = new ArrayList<String>();
+	   	final List<Language> langsList = new ArrayList<Language>();
 	   		        
 	   	for (SearchHit se : response.getHits().getHits()){
 	   		 
-	   		 langsList.add(se.getSource().get("langExtended").toString());
-	   		           
-	   		            
+	   		 String langExtended= se.getSource().get("langExtended").toString();
+	   		 String directExtended= se.getSource().get("directTranslationLanguagesExtended").toString();         
+	   		 String indirectExtended= se.getSource().get("indirectTranslationLanguagesExtended").toString();
+	   		 String pivotExtended= se.getSource().get("pivotLanguagesExtended").toString();  
+	   		 langsList.add(new Language(langExtended,directExtended.split(","),indirectExtended.split(","),pivotExtended.split(",")));
 	   	}
    	
-	   	return langsList;
+	   	return langsList.toArray(new Language[ langsList.size()] );
 
         
 
             
     }
-	
-	public  String[] getDirectTranslationLang(String s){
-        //Get document
+
+
+	public boolean checkIsIndirect(String langSource, String langTarget) {
 		
-		Client client= ElasticsSearchAccess.getInstance();//.startClient();
-    	
-		System.out.println("word "+s);
-		TermQueryBuilder builder = QueryBuilders.termQuery("langExtended", s.toLowerCase());
-        SearchRequestBuilder sRequestBuilder = client.prepareSearch().setQuery(builder);//
-        sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
-        sRequestBuilder.setTypes("languageMap");
-        sRequestBuilder.setSize(1000);
-        
-
-        SearchResponse response = sRequestBuilder.execute().actionGet();
-       String direct= "";
-
-        for (SearchHit se : response.getHits().getHits()){
-           
-            //System.out.print(se.getSource().get("directTranslationLanguagesExtended").toString());
-            direct=se.getSource().get("directTranslationLanguagesExtended").toString();
-            break;
-        }
-        
-        
-        System.out.println("Direct >> "+direct);
-	   	
-   	
-	   	return direct.split(",");
-
-        
-
-            
-    }
-	
-	public  String[] getIndirectTranslationLang(String LangExtended){
-        //Get document
+		if(langTarget.equals("All")) {return false;}
 		
-		Client client= ElasticsSearchAccess.getInstance();//.startClient();
-    	
-		System.out.println("word "+LangExtended);
-		TermQueryBuilder builder = QueryBuilders.termQuery("langExtended", LangExtended.toLowerCase());
-        SearchRequestBuilder sRequestBuilder = client.prepareSearch().setQuery(builder);//
-        sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
-        sRequestBuilder.setTypes("languageMap");
-        sRequestBuilder.setSize(1000);
-        
-
-        SearchResponse response = sRequestBuilder.execute().actionGet();
-       String direct= "";
-
-        for (SearchHit se : response.getHits().getHits()){
-           
-            //System.out.print(se.getSource().get("directTranslationLanguagesExtended").toString());
-            direct=se.getSource().get("indirectTranslationLanguagesExtended").toString();
-            break;
-        }
-        
-        
-        System.out.println(" Indirect >>  "+direct);
-	   	
-   	
-	   	return direct.split(",");
-
-        
-
-            
-    }
+		for (Language lang: this.LanguageArray){
+			if(lang.label.equals(langSource)){
+				for(String Indirect: lang.indirectLang){
+					if (langTarget.equals(Indirect)){
+						return true;
+					}
+				}
+				return false;
+			}
+			
+		}
+		return false;
+		
+		
+	}
+	
+	
 
 }

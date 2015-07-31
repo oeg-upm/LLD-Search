@@ -58,7 +58,7 @@ public class TranslationServiceImpl implements TranslationService {
         if (searchQuery.isIndirect()) {
             return this.translationDAO.searchIndirectTranslations(
                     searchQuery.getTerm(), searchQuery.getLangSourceCode(),
-                    langTarget, langPivot, searchQuery.getBabelnet());
+                    langTarget, langPivot, searchQuery.getBabelnet(),searchQuery.getThreshold());
         }
 
         return this.translationDAO.searchDirectTranslations(

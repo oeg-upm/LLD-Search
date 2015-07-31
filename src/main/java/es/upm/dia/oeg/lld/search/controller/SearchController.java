@@ -30,6 +30,9 @@ public class SearchController {
     @Autowired
     SearchQueryValidator sqValidator;
     
+    @Autowired
+    LanguageTranslationMap LangMap;
+    
 
     // Default main page
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -55,19 +58,14 @@ public class SearchController {
 
     @RequestMapping(value = "/search", method = RequestMethod.POST)
     public String search(HttpServletRequest request,@ModelAttribute @Valid SearchQuery searchQuery,
-            BindingResult bindingResult, 
-            Model model,
-            final RedirectAttributes redirectAttributes) {
+            BindingResult bindingResult, Model model, final RedirectAttributes redirectAttributes) {
     	
     	 HttpSession  session= request.getSession();
-    	
     	
     	// validate if errors     
         this.sqValidator.validate(searchQuery, bindingResult);
      
-        
-     
-
+       
         if (bindingResult.hasErrors()) {
         	
             initLists(model);
@@ -88,13 +86,17 @@ public class SearchController {
         
         // set code languages
     	searchQuery.setCodeLanguages(translationService);
-        
+    	
+    	 // TODO - MIRAR SI ES INDIRECTA 
+        searchQuery.setIndirect(LangMap.checkIsIndirect(searchQuery.getLangSource(),searchQuery.getLangTarget()));
+
+
         
         initLists(model);
         model.addAttribute("searchQuery", searchQuery); 
-
         List<Translation> translations = this.translationService.getTranslations(searchQuery);
         
+        /*
         // if is direct and has no values - only is possible if you have a target lang
         if((translations.isEmpty()) && (!searchQuery.isIndirect()) && (!searchQuery.getLangTarget().equalsIgnoreCase("All")) ){
         	
@@ -106,7 +108,7 @@ public class SearchController {
         	return "results-indirect";
         	
         }
-        
+        */
 
         model.addAttribute("translations", translations);
         
@@ -134,9 +136,9 @@ public class SearchController {
         
         model.addAttribute("languagesFrom", languages);
         model.addAttribute("languagesTo", languagesTo);
-        LanguageTranslationMap langMap = new LanguageTranslationMap();
-        //model.addAttribute("languagesMap", langMap);
-        model.addAttribute("languagesMapArray", langMap.getLangArray());
+        
+        
+        model.addAttribute("languagesMapArray", LangMap.getLanguageArray());
        
     }
     

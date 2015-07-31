@@ -15,5 +15,5 @@ public interface TranslationDAO {
 
     public List<Translation> searchIndirectTranslations(String label,
             String langSource, String langTarget, String langPivot,
-            boolean babelnet);
+            boolean babelnet,double threshold);
 }

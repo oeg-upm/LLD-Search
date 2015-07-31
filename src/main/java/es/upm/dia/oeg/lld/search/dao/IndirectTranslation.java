@@ -12,7 +12,7 @@ import es.upm.dia.oeg.lld.search.model.Translation;
 public class IndirectTranslation {
 	
 	
-	public static List<Translation> searchIndirectTranslationWithPivotLang(String word,String SourceLang, String PivotLang,String TargetLang) {
+	public static List<Translation> searchIndirectTranslationWithPivotLang(String word,String SourceLang, String PivotLang,String TargetLang,double threshold) {
 
         Client client = ElasticsSearchAccess.getInstance();//.startClient();
 
@@ -22,8 +22,9 @@ public class IndirectTranslation {
         List<Translation> listResults= new ArrayList<Translation>();
         for (TranslatablePair trans: translatablePairs){
         	
+        	if(trans.score>threshold){
         	listResults.add(trans.toTranslation());
-        	
+        	}
         }
         return listResults;
         
@@ -136,7 +137,7 @@ public class IndirectTranslation {
     
     /* Just an function that must be in an xml or something. 
      * */
-    public static String [] getPivotLang( String SourceLang){
+    public static String [] getPivotLang2( String SourceLang){
     	
     	if(SourceLang.equals("ro")){
     		return "es".split(",");

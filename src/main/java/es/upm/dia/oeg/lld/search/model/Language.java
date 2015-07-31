@@ -7,14 +7,16 @@ public class Language {
 	
 	
 	public String label;
-	//public String labelExtended;
 	public String [] translationLang;
 	public String [] indirectLang;
+	public String [] pivotLang;
 	
-	public Language(String Label, String [] trans, String [] indtrans){
+	
+	public Language(String Label, String [] trans, String [] indtrans,String [] pivtrans){
 		label= Label;
 		translationLang= ArrayUtils.addAll(new String[]{"All"}, trans);
 		indirectLang=indtrans;
+		pivotLang= ArrayUtils.addAll(new String[]{"All"}, pivtrans);
 	}
 	
 	public String getLabel(){
@@ -29,6 +31,10 @@ public class Language {
 
 	public String[] getIndirectLang() {
 		return indirectLang;
+	}
+	
+	public String[] getPivotLang() {
+		return pivotLang;
 	}
 	
 	

@@ -28,7 +28,7 @@ public class SearchQuery {
     
     private String pivotLanguageCode;
     
-    //private static boolean isExecuted;
+    private double threshold;
     
     
     
@@ -162,24 +162,15 @@ public class SearchQuery {
 		this.pivotLanguageCode = pivotLanguageCode;
 	}
 
-	// not working (the funcionality of the variable)
-	/*
+	public double getThreshold() {
+		return threshold;
+	}
 
-	public final boolean isExecuted() {
-		return isExecuted;
+	public void setThreshold(double threshold) {
+		this.threshold = threshold;
 	}
 
 
-	public static void setExecuted(boolean isExecuted) {
-		SearchQuery.isExecuted = isExecuted;
-	}
-	*/
-
-	
-    
-    
-    
-    
 
 	
 }
