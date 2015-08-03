@@ -177,16 +177,50 @@ public class TranslationDAOImpl implements TranslationDAO {
     @Override
     public List<Translation> searchDirectTranslations(String label,String langSource, String langTarget, boolean babelnet) {
 
+    	
+    	/*
+    	 *
+    	 
+        TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",Sourcelang);
+
+         //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", word),fil);
+         FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(word),fil);
+        
+        
+ 
+        SearchRequestBuilder sRequestBuilder = client.prepareSearch().setQuery(builder);//
+        sRequestBuilder.setIndices(indexName);
+        sRequestBuilder.setTypes("translation");
+        sRequestBuilder.setSize(500);
+        
+
+        SearchResponse response = sRequestBuilder.execute().actionGet();
+        //System.out.println(response);
+        int a=0;
+        for (SearchHit se : response.getHits().getHits()){
+            a++;
+            System.out.print(se.getScore()+" ");
+            System.out.print(" - ");
+            System.out.print(se.getSource().get("source_word").toString());
+            System.out.print(" - ");
+            System.out.print(se.getSource().get("target_word").toString());
+            System.out.print(" - ");
+            System.out.println(se.getSource().get("target_lang").toString());
+            
+        }
+        System.out.println(a);
+    	 */
+    	
     	SearchRequestBuilder sRequestBuilder;
 
         // TO ALL POSSIBLE LANGUAGES
         if (langTarget == null) {
             
         	TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
+        	
 
-            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(
-            		QueryBuilders.termQuery("source_word", label),fil);
-            
+            //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),fil);
+            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(label),fil);
      
             sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);//.startClient()
             sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
@@ -199,9 +233,8 @@ public class TranslationDAOImpl implements TranslationDAO {
         	TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
             TermFilterBuilder fil2= FilterBuilders.termFilter("target_lang",langTarget);
 
-            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),
-            		FilterBuilders.andFilter(fil).add(fil2));
-            
+            //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),FilterBuilders.andFilter(fil).add(fil2));
+            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(label),FilterBuilders.andFilter(fil).add(fil2));
      
             sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);//.startClient()
             sRequestBuilder.setIndices(ElasticsSearchAccess.Index);

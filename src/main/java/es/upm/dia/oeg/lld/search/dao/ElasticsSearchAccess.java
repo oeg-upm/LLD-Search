@@ -34,27 +34,9 @@ public class ElasticsSearchAccess {
 	    }
 	
 	
-	
 	    public static void closeClient(){
  		
 	    	Cliente.close();
 	    }
-	    
-    
- /*
-    
-    
-    public static final Client startClient(){
-    	
-
-    	
-    }
-    
-    public static final void closeClient(){
-    		
-    	client.close();
-    }
-    
-    */
 
 }

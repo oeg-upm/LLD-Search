@@ -1,7 +1,9 @@
 package es.upm.dia.oeg.lld.search.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -16,11 +18,12 @@ public class LanguageTranslationMap {
 	
 	
 	Language [] LanguageArray;
+	Map <String, String> LangCodesMap;
 	
 	public LanguageTranslationMap(){
 		
-		System.out.println(">>> Constructor");
 		LanguageArray=createLanguageArray();
+		LangCodesMap= createLangCodeMap();
 	}
 	
 	
@@ -36,12 +39,72 @@ public class LanguageTranslationMap {
 	}
 	
 	
+	public String getLangCode(String lang){
+			
+			if(LangCodesMap==null){
+				LangCodesMap=this.createLangCodeMap();
+			}
+			
+			if (lang == null) {return "All";}
+			if (lang.equals("null")) {return "All";}
+			
+			return LangCodesMap.get(lang);
+			
+	
+	}
+	
+	public Map<String,String> getLangCodesMap(){
+		
+		if(LangCodesMap==null){
+			LangCodesMap=this.createLangCodeMap();
+		}
+		
+		return LangCodesMap;
+	}
+
+	
 	///// this should not be here
+	
+	public Map<String,String> createLangCodeMap(){
+        //Get document
+		
+		
+		
+		Client client= ElasticsSearchAccess.getInstance();
+    	
+	   	String guery="{" +
+	   		"  \"query\": { \"match_all\": {} }" +
+	   		"}";
+	   		        
+	   	 SearchRequestBuilder sRequestBuilder = client.prepareSearch(guery);//
+	   	 sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
+	   	 sRequestBuilder.setTypes("language");
+	   	 sRequestBuilder.setSize(500);
+	
+	   	SearchResponse response = sRequestBuilder.execute().actionGet();
+	
+	   	Map <String,String> langCodeMap = new HashMap<String,String>();
+	   	langCodeMap.put("All", "All");
+	   		        
+	   	for (SearchHit se : response.getHits().getHits()){
+	   		 
+	   		 String langExtended= se.getSource().get("langExtended").toString();
+	   		 String lang= se.getSource().get("lang").toString();
+	   		 langCodeMap.put(langExtended, lang);
+	   	}
+   	
+	   	return langCodeMap;
+
+        
+
+            
+    }
+	
 	
 	public  Language[] createLanguageArray(){
         //Get document
 		
-		System.out.println(">>>> Server call for lang map ");
+		
 		
 		Client client= ElasticsSearchAccess.getInstance();
     	
@@ -75,6 +138,7 @@ public class LanguageTranslationMap {
     }
 
 
+	/*
 	public boolean checkIsIndirect(String langSource, String langTarget) {
 		
 		if(langTarget.equals("All")) {return false;}
@@ -94,6 +158,17 @@ public class LanguageTranslationMap {
 		
 		
 	}
+	*/
+	
+	public Language getSourceLanguage(String langSource) {
+					
+			for (Language lang: this.LanguageArray){
+				if(lang.label.equals(langSource)){
+					return lang;
+				}
+			}
+			return new Language();
+		}
 	
 	
 

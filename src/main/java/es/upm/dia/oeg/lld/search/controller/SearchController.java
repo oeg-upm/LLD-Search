@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import es.upm.dia.oeg.lld.search.dao.LanguageTranslationMap;
+import es.upm.dia.oeg.lld.search.model.Language;
 import es.upm.dia.oeg.lld.search.model.SearchQuery;
 import es.upm.dia.oeg.lld.search.model.Translation;
 import es.upm.dia.oeg.lld.search.service.TranslationService;
@@ -37,8 +39,7 @@ public class SearchController {
     // Default main page
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String searchForm(HttpServletRequest request,Model model) {
-        initLists(model);
-        
+        initLists(model); 
         model.addAttribute("searchQuery", new SearchQuery());
         request.getSession().setAttribute("status", null);
         
@@ -64,11 +65,17 @@ public class SearchController {
     	
     	// validate if errors     
         this.sqValidator.validate(searchQuery, bindingResult);
-     
+        
+        Language LangSource= LangMap.getSourceLanguage(searchQuery.getLangSource());
+        // ADD ATTRIBUTES FOR LANG TARGET (Navigation)
+        initLists(model);
+        model.addAttribute("languagesTargetDirect", LangSource.translationLang);
+        model.addAttribute("languagesTargetIndirect", LangSource.indirectLang);
+        model.addAttribute("languagesPivot", LangSource.pivotLang);
        
         if (bindingResult.hasErrors()) {
         	
-            initLists(model);
+            
             model.addAttribute("searchQuery", searchQuery);
             
             if(session.getAttribute("status")!=null){
@@ -85,40 +92,25 @@ public class SearchController {
         }
         
         // set code languages
-    	searchQuery.setCodeLanguages(translationService);
+        
+    	searchQuery.setLangSourceCode(LangMap.getLangCode(searchQuery.getLangSource()));
+    	searchQuery.setLangTargetCode(LangMap.getLangCode(searchQuery.getLangTarget()));
+    	searchQuery.setPivotLanguageCode(LangMap.getLangCode(searchQuery.getPivotLanguage()));
     	
-    	 // TODO - MIRAR SI ES INDIRECTA 
-        searchQuery.setIndirect(LangMap.checkIsIndirect(searchQuery.getLangSource(),searchQuery.getLangTarget()));
-
-
+    	 // IS INDIRECT TRANSLATION?? 
+        searchQuery.setIndirect(LangSource.checkIsIndirect(searchQuery.getLangTarget()));
         
-        initLists(model);
-        model.addAttribute("searchQuery", searchQuery); 
+       
+        
         List<Translation> translations = this.translationService.getTranslations(searchQuery);
-        
-        /*
-        // if is direct and has no values - only is possible if you have a target lang
-        if((translations.isEmpty()) && (!searchQuery.isIndirect()) && (!searchQuery.getLangTarget().equalsIgnoreCase("All")) ){
-        	
-        	searchQuery.setIndirect(true);
-        	translations = this.translationService.getTranslations(searchQuery);
-        	model.addAttribute("translations", translations);
-        	searchQuery.setIndirect(false);
-        	session.setAttribute("status", "indirect");
-        	return "results-indirect";
-        	
-        }
-        */
-
         model.addAttribute("translations", translations);
-        
+        model.addAttribute("searchQuery", searchQuery); 
         
         if (searchQuery.isIndirect()) {
         	session.setAttribute("status", "indirect");
             return "results-indirect";
         }
-        
-        
+
         session.setAttribute("status", "direct");
         return "results-direct";
     }
@@ -135,9 +127,6 @@ public class SearchController {
         languagesTo.addAll(languages);
         
         model.addAttribute("languagesFrom", languages);
-        model.addAttribute("languagesTo", languagesTo);
-        
-        
         model.addAttribute("languagesMapArray", LangMap.getLanguageArray());
        
     }

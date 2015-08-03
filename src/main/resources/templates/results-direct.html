@@ -44,7 +44,7 @@
 		</script>	
 		<script type="text/javascript">
 			/*<![CDATA[*/
-			function newpopulate(){
+			function populate(){
 				console.log('hola');
 				d=document.getElementById('targ');
 				d=cleanAllChilds(d);
@@ -86,16 +86,9 @@
 					optiongGroupContainer2.appendChild(optionContainer);
 					});
 					d.appendChild(optiongGroupContainer2);
-					
-					
+
 					}
-
-					
 				}
-
-				
-
-				
 			}
 			/*]]>*/
 		</script>	
@@ -140,18 +133,10 @@
 						</div>
 						<!-- options -->
 							<div class="row">
-								<!--div class="col-md-4">
-									<p>Source language:
-										<select th:field="*{langSource}" name="language">
-											<option value="">- select option -</option>
-											<option th:each="lang : ${languagesFrom}" th:value="${lang}" th:text="${lang}">
-											</option>
-										</select>
-									</p>
-								</div-->
+																
 								<div class="col-md-4">
 									<p>Source language:
-										<select th:field="*{langSource}" name="language" id="MySelect" onChange="newpopulate()">
+										<select th:field="*{langSource}" name="language" id="MySelect" onChange="populate()" onLoad="populate()">
 											<option value="">- select option -</option>
 											<option th:each="lang : ${languagesMapArray}" th:value="${lang.getLabel()}" th:text="${lang.getLabel()}">
 											</option>
@@ -164,17 +149,16 @@
 							</div>
 							
 							<div class="row">
-								<!--div class="col-md-4">
-									<p>Target Language:
-										<select th:field="*{langTarget}">
-											<option th:each="langT : ${languagesTo}" th:value="${langT}" th:text="${langT}">
-											</option>
-										</select>
-									</p>
-								</div-->
+								
 								<div class="col-md-4">
 									<p>Target Language:
 										<select name="targ" id="targ" th:field="*{langTarget}">
+											<optgroup label="DIRECT">
+												<option th:each="langT : ${languagesTargetDirect}" th:value="${langT}" th:text="${langT}"> </option>
+											</optgroup>
+											<optgroup label="INDIRECT">
+												<option th:each="langTI : ${languagesTargetIndirect}" th:value="${langTI}" th:text="${langTI}"> </option>
+											</optgroup>
 										</select>
 									</p>
 								</div>
@@ -196,14 +180,14 @@
 							<div class="row" id='advancedOptions'>
 								<div class="col-md-6">
 
-									<p>Get indirect translations (not compatible with "All" option for target language):
-										<input type="checkbox" th:field="*{indirect}" />
-									</p>
-									<p> Set pivot language (optional):
-										<select th:field="*{pivotLanguage}">
-											<option th:each="langP : ${languagesTo}" th:value="${langP}" th:text="${langP}">
+									<p> Set pivot language (Only INDIRECT):
+										<select id="pivotLang" th:field="*{pivotLanguage}">
+											<option th:each="langP : ${languagesPivot}" th:value="${langP}" th:text="${langP}">
 											</option>
 										</select>
+									</p>
+									<p> Set threshold (From 0 to 1):
+									<input type="number" name="threshold" value="0" th:field="*{threshold}" min="0" max="1" step="0.01" />
 									</p>
 								</div>
 							</div>
@@ -308,17 +292,7 @@
 		</div>
       </div>
     </footer>
-     <!--nav class="navbar navbar-inverse navbar-fixed-bottom">
-				
-					<div class="row">
-					<div class="col-md-4 col-md-offset-2">
-						<a href="http://www.oeg-upm.net/"><img th:src="@{/icon/logoOEG.png}" src="#" /></a>  
-					</div>
-					<div class="col-md-5 ">
-						 <h5 class="info-footer">Ontology Engineering Group</h5>
-					</div>
-					</div>
-    </nav-->
+   
    
    <script type='text/javascript'>
         $(document).ready(function() {

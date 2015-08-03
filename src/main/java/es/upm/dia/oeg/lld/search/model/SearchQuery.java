@@ -125,8 +125,12 @@ public class SearchQuery {
     }
     
     // look for the codes
+    /*
     public final void setCodeLanguages(TranslationService translationService) {
        
+    	System.out.println(" > "+this.getLangSource());
+    	System.out.println(" > "+this.getLangTarget());
+    	System.out.println(" > "+this.getPivotLanguage());
     	String langCode1= translationService.getLanguageCode(this.getLangSource());
     	String langCode2=translationService.getLanguageCode(this.getLangTarget());
     	String langCode3=translationService.getLanguageCode(this.getPivotLanguage());
@@ -134,8 +138,11 @@ public class SearchQuery {
     	this.setLangSourceCode(langCode1);
     	this.setLangTargetCode(langCode2);
     	this.setPivotLanguageCode(langCode3);
+    	System.out.println(" > "+this.getLangSourceCode());
+    	System.out.println(" > "+this.getLangTargetCode());
+    	System.out.println(" > "+this.getPivotLanguageCode());
     	
-    }
+    }*/
     
     // GETTER AND SETTER FOR LANG CODES
     public String getLangSourceCode() {

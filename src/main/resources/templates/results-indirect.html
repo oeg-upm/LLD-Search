@@ -9,13 +9,16 @@
 	
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.min.css"  th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+	
 	<!-- Loading Flat UI -->
     <link href="../static/css/flat-ui.min.css" th:href="@{/css/flat-ui.min.css}" rel="stylesheet"/>
-    
+
     <!-- Custom styles for this template -->
-    <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet"/>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="../static/js/ie-emulation-modes-warning.js"></script>
+    <link href="../static/css/lider.css" th:href="@{/css/lider.css}" rel="stylesheet" />
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../static/js/ie-emulation-modes-warning.js" th:src="@{/js/ie-emulation-modes-warning.js}"></script>
 	
 	
 	<script  th:inline="javascript">
@@ -38,10 +41,10 @@
 				}
 				return container;
 			}
-		</script>	
-		<script type="text/javascript">
+	</script>	
+	<script type="text/javascript">
 			/*<![CDATA[*/
-			function newpopulate(){
+			function populate(){
 				console.log('hola');
 				d=document.getElementById('targ');
 				d=cleanAllChilds(d);
@@ -83,19 +86,12 @@
 					optiongGroupContainer2.appendChild(optionContainer);
 					});
 					d.appendChild(optiongGroupContainer2);
-					
-					
+						
 					}
-
-					
 				}
-
-				
-
-				
 			}
 			/*]]>*/
-		</script>	
+  </script>	
 	
   </head>
 
@@ -137,15 +133,17 @@
 					</div>	
 				   <!-- options -->
 							<div class="row">
+
 								<div class="col-md-4">
 									<p>Source language:
-										<select th:field="*{langSource}" name="language">
+										<select th:field="*{langSource}" name="language" id="MySelect" onChange="populate()" onLoad="populate()">
 											<option value="">- select option -</option>
-											<option th:each="lang : ${languagesFrom}" th:value="${lang}" th:text="${lang}">
+											<option th:each="lang : ${languagesMapArray}" th:value="${lang.getLabel()}" th:text="${lang.getLabel()}">
 											</option>
 										</select>
 									</p>
 								</div>
+								
 								<div class="col-md-4">
 									<p class="info-error" th:if="${#fields.hasErrors('langSource')}" th:errors="*{langSource}"></p>
 								</div>
@@ -154,10 +152,13 @@
 							<div class="row">
 								<div class="col-md-4">
 									<p>Target Language:
-										<select th:field="*{langTarget}">
-											<!--option value="">- select option -</option-->
-											<option th:each="langT : ${languagesTo}" th:value="${langT}" th:text="${langT}">
-											</option>
+										<select name="targ" id="targ" th:field="*{langTarget}">
+											<optgroup label="DIRECT">
+												<option th:each="langT : ${languagesTargetDirect}" th:value="${langT}" th:text="${langT}"> </option>
+											</optgroup>
+											<optgroup label="INDIRECT">
+												<option th:each="langTI : ${languagesTargetIndirect}" th:value="${langTI}" th:text="${langTI}"> </option>
+											</optgroup>
 										</select>
 									</p>
 								</div>
@@ -179,14 +180,14 @@
 							<div class="row" id='advancedOptions'>
 								<div class="col-md-6">
 
-									<p>Get indirect translations (not compatible with "All" option for target language):
-										<input type="checkbox" th:field="*{indirect}" />
-									</p>
-									<p> Set pivot language (optional):
-										<select th:field="*{pivotLanguage}">
-											<option th:each="langP : ${languagesTo}" th:value="${langP}" th:text="${langP}">
+									<p> Set pivot language (Only INDIRECT):
+										<select id="pivotLang" th:field="*{pivotLanguage}">
+											<option th:each="langP : ${languagesPivot}" th:value="${langP}" th:text="${langP}">
 											</option>
 										</select>
+									</p>
+									<p> Set threshold (From 0 to 1):
+									<input type="number" name="threshold" value="0" th:field="*{threshold}" min="0" max="1" step="0.01" />
 									</p>
 								</div>
 							</div>
@@ -306,17 +307,6 @@
 		</div>
       </div>
     </footer>
-     <!--nav class="navbar navbar-inverse navbar-fixed-bottom">
-				
-					<div class="row">
-					<div class="col-md-4 col-md-offset-2">
-						<a href="http://www.oeg-upm.net/"><img th:src="@{/icon/logoOEG.png}" src="#" /></a>  
-					</div>
-					<div class="col-md-5 ">
-						 <h5 class="info-footer">Ontology Engineering Group</h5>
-					</div>
-					</div>
-    </nav-->
    
    <script type='text/javascript'>
         $(document).ready(function() {

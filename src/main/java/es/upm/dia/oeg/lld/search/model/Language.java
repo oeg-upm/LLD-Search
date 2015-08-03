@@ -19,6 +19,14 @@ public class Language {
 		pivotLang= ArrayUtils.addAll(new String[]{"All"}, pivtrans);
 	}
 	
+	public Language(){
+		label= new String();
+		translationLang= new  String[0];
+		indirectLang=new  String[0];
+		pivotLang= new  String[0];
+	}
+	
+	
 	public String getLabel(){
 		return label;
 		
@@ -37,6 +45,18 @@ public class Language {
 		return pivotLang;
 	}
 	
+	public boolean checkIsIndirect(String langTarget) {
+			
+		if(langTarget.equals("All")) {return false;}
+			
+			for(String Indirect: this.indirectLang){
+				if (langTarget.equals(Indirect)){
+					return true;
+				}
+			}
+					
+		return false;
+	}
 	
 	
 	
