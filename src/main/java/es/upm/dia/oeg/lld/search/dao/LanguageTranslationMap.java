@@ -12,6 +12,8 @@ import org.elasticsearch.search.SearchHit;
 import org.springframework.stereotype.Component;
 
 import es.upm.dia.oeg.lld.search.model.Language;
+import es.upm.dia.oeg.lld.search.dao.ElasticsSearchAccess;
+
 
 @Component
 public class LanguageTranslationMap {
@@ -34,8 +36,6 @@ public class LanguageTranslationMap {
 		}
 		
 		return LanguageArray;
-		
-
 	}
 	
 	
@@ -49,8 +49,6 @@ public class LanguageTranslationMap {
 			if (lang.equals("null")) {return "All";}
 			
 			return LangCodesMap.get(lang);
-			
-	
 	}
 	
 	public Map<String,String> getLangCodesMap(){
@@ -124,10 +122,18 @@ public class LanguageTranslationMap {
 	   	for (SearchHit se : response.getHits().getHits()){
 	   		 
 	   		 String langExtended= se.getSource().get("langExtended").toString();
-	   		 String directExtended= se.getSource().get("directTranslationLanguagesExtended").toString();         
+	   		 
+	   		 String directExtended= se.getSource().get("directTranslationLanguagesExtended").toString();        
+	   		 String direct= se.getSource().get("directTranslationLanguages").toString();  
+	   		
 	   		 String indirectExtended= se.getSource().get("indirectTranslationLanguagesExtended").toString();
+	   		 String indirect= se.getSource().get("indirectTranslationLanguages").toString(); 
+	   		 
 	   		 String pivotExtended= se.getSource().get("pivotLanguagesExtended").toString();  
-	   		 langsList.add(new Language(langExtended,directExtended.split(","),indirectExtended.split(","),pivotExtended.split(",")));
+	   		 String pivot= se.getSource().get("pivotLanguages").toString(); 
+	   		 
+	   		 
+	   		 langsList.add(new Language(langExtended,directExtended ,direct ,indirectExtended ,indirect ,pivotExtended , pivot));
 	   	}
    	
 	   	return langsList.toArray(new Language[ langsList.size()] );
@@ -137,33 +143,11 @@ public class LanguageTranslationMap {
             
     }
 
-
-	/*
-	public boolean checkIsIndirect(String langSource, String langTarget) {
-		
-		if(langTarget.equals("All")) {return false;}
-		
-		for (Language lang: this.LanguageArray){
-			if(lang.label.equals(langSource)){
-				for(String Indirect: lang.indirectLang){
-					if (langTarget.equals(Indirect)){
-						return true;
-					}
-				}
-				return false;
-			}
-			
-		}
-		return false;
-		
-		
-	}
-	*/
 	
 	public Language getSourceLanguage(String langSource) {
 					
 			for (Language lang: this.LanguageArray){
-				if(lang.label.equals(langSource)){
+				if(lang.getLanguageLabel().equals(langSource)){
 					return lang;
 				}
 			}

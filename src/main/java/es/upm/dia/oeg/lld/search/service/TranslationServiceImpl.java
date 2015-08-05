@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import es.upm.dia.oeg.lld.search.dao.DictionaryDAO;
 import es.upm.dia.oeg.lld.search.dao.TranslationDAO;
+import es.upm.dia.oeg.lld.search.model.Language;
 import es.upm.dia.oeg.lld.search.model.SearchQuery;
 import es.upm.dia.oeg.lld.search.model.Translation;
 
@@ -42,7 +43,7 @@ public class TranslationServiceImpl implements TranslationService {
     }
      */
     @Override
-    public List<Translation> getTranslations(SearchQuery searchQuery) {
+    public List<Translation> getTranslations(SearchQuery searchQuery, Language Lang) {
 
         String langTarget = searchQuery.getLangTargetCode();
         String langPivot = searchQuery.getPivotLanguageCode();
@@ -56,12 +57,12 @@ public class TranslationServiceImpl implements TranslationService {
         }
 
         if (searchQuery.isIndirect()) {
-            return this.translationDAO.searchIndirectTranslations(
+            return this.translationDAO.searchIndirectTranslations(Lang,
                     searchQuery.getTerm(), searchQuery.getLangSourceCode(),
                     langTarget, langPivot, searchQuery.getBabelnet(),searchQuery.getThreshold());
         }
 
-        return this.translationDAO.searchDirectTranslations(
+        return this.translationDAO.searchDirectTranslations( Lang,
                 searchQuery.getTerm(), searchQuery.getLangSourceCode(), langTarget,
                 searchQuery.getBabelnet());
     }

@@ -6,29 +6,40 @@ public class Language {
 	
 	
 	
-	public String label;
+	public String languageLabel;
+	// view
 	public String [] translationLang;
 	public String [] indirectLang;
 	public String [] pivotLang;
 	
+	// controller
+	public String [] translationLangCodes;
+	public String [] indirectLangCodes;
+	public String [] pivotLangCodes;
 	
-	public Language(String Label, String [] trans, String [] indtrans,String [] pivtrans){
-		label= Label;
-		translationLang= ArrayUtils.addAll(new String[]{"All"}, trans);
-		indirectLang=indtrans;
-		pivotLang= ArrayUtils.addAll(new String[]{"All"}, pivtrans);
+	public Language(String LangLabel, String trans, String transCodes, String indirecttrans, String indirecttransCodes,String pivtrans, String pivtransCodes){
+		languageLabel= LangLabel;
+		translationLang= ArrayUtils.addAll(new String[]{"All"}, trans.split(","));
+		translationLangCodes=  transCodes.split(",");
+		
+		indirectLang=indirecttrans.split(",");
+		indirectLangCodes= indirecttransCodes.split(",");
+		
+		pivotLang= ArrayUtils.addAll(new String[]{"All"}, pivtrans.split(","));
+		pivotLangCodes=pivtransCodes.split(",");
+		
 	}
 	
 	public Language(){
-		label= new String();
+		languageLabel= new String();
 		translationLang= new  String[0];
 		indirectLang=new  String[0];
 		pivotLang= new  String[0];
 	}
 	
 	
-	public String getLabel(){
-		return label;
+	public String getLanguageLabel(){
+		return languageLabel;
 		
 	}
 	
@@ -45,6 +56,19 @@ public class Language {
 		return pivotLang;
 	}
 	
+
+	public String[] getTranslationLangCodes() {
+		return translationLangCodes;
+	}
+
+	public String[] getIndirectLangCodes() {
+		return indirectLangCodes;
+	}
+
+	public String[] getPivotLangCodes() {
+		return pivotLangCodes;
+	}
+
 	public boolean checkIsIndirect(String langTarget) {
 			
 		if(langTarget.equals("All")) {return false;}

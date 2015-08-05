@@ -23,6 +23,7 @@ import org.elasticsearch.index.query.TermQueryBuilder;
 import org.springframework.stereotype.Component;
 import org.elasticsearch.search.SearchHit;
 
+import es.upm.dia.oeg.lld.search.model.Language;
 import es.upm.dia.oeg.lld.search.model.Translation;
 
 @Component
@@ -35,7 +36,7 @@ public class TranslationDAOImpl implements TranslationDAO {
     public List<String> getLanguages() {
 
     	
-    	Client client= ElasticsSearchAccess.getInstance();//.startClient();
+    	Client client= ElasticsSearchAccess.getInstance();
     	
    	 String guery="{" +
    		        "  \"query\": { \"match_all\": {} }" +
@@ -65,28 +66,6 @@ public class TranslationDAOImpl implements TranslationDAO {
        
     }
 
-    /*
-      final String queryString = AppConstants.GET_ALL_LANGUAGES_QUERY;
-
-        final Query query = QueryFactory.create(queryString);
-
-        // Execute the query and obtain results
-        final QueryExecution qe = QueryExecutionFactory.sparqlService(
-                AppConstants.SPARQL_ENDPOINT, query);
-
-        final ResultSet results = qe.execSelect();
-
-        final List<String> languages = new ArrayList<String>();
-
-        while (results.hasNext()) {
-            final QuerySolution result = results.next();
-            languages.add(result.get("lang").asLiteral().getString());
-        }
-
-        qe.close();
-
-        return languages;
-     * */
     
     
     /**
@@ -99,10 +78,7 @@ public class TranslationDAOImpl implements TranslationDAO {
     private final Translation createTranslationFromSearchHit(SearchHit se, boolean indirect, boolean babelnet) {
         final Translation trans = new Translation();
 
-        // for the demo only
-        final Random rand = new Random();
-        final float min = 0.5f;
-        final float max = 1f;
+       
         
         try {
          
@@ -123,8 +99,7 @@ public class TranslationDAOImpl implements TranslationDAO {
             }
 
             if (indirect) {
-            	/********** MOCKED VALUE *********/
-                //trans.setScore(rand.nextFloat() * (max - min) + min);
+            	
                 trans.setPivotLanguage(se.getSource().get("pivot_lang").toString());
                 
             }
@@ -147,7 +122,7 @@ public class TranslationDAOImpl implements TranslationDAO {
     	
     	SearchResponse response = sRequestBuilder.execute().actionGet();
     	final List<Translation> translations = new ArrayList<Translation>();
-    	float score=0;
+    	float score=0; // avoid : "banco" .... "banco Santander"
 
         for (SearchHit se : response.getHits().getHits()){
         	if(se.getScore()>=score){
@@ -156,11 +131,8 @@ public class TranslationDAOImpl implements TranslationDAO {
         		translations.add(trans);
         	}
         }
-    	
-        //ElasticsSearchAccess.closeClient();
         
         if(!babelnet){
-        	
         	return cleanDuplicates(translations);
         }
         return translations;
@@ -175,76 +147,44 @@ public class TranslationDAOImpl implements TranslationDAO {
      * 
      */
     @Override
-    public List<Translation> searchDirectTranslations(String label,String langSource, String langTarget, boolean babelnet) {
-
+    public List<Translation> searchDirectTranslations(Language lang,String label,String langSource, String langTarget, boolean babelnet) {
     	
-    	/*
-    	 *
-    	 
-        TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",Sourcelang);
-
-         //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", word),fil);
-         FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(word),fil);
-        
-        
- 
-        SearchRequestBuilder sRequestBuilder = client.prepareSearch().setQuery(builder);//
-        sRequestBuilder.setIndices(indexName);
-        sRequestBuilder.setTypes("translation");
-        sRequestBuilder.setSize(500);
-        
-
-        SearchResponse response = sRequestBuilder.execute().actionGet();
-        //System.out.println(response);
-        int a=0;
-        for (SearchHit se : response.getHits().getHits()){
-            a++;
-            System.out.print(se.getScore()+" ");
-            System.out.print(" - ");
-            System.out.print(se.getSource().get("source_word").toString());
-            System.out.print(" - ");
-            System.out.print(se.getSource().get("target_word").toString());
-            System.out.print(" - ");
-            System.out.println(se.getSource().get("target_lang").toString());
-            
-        }
-        System.out.println(a);
-    	 */
     	
+    	List<Translation> ListRes = new ArrayList<Translation>();
     	SearchRequestBuilder sRequestBuilder;
 
         // TO ALL POSSIBLE LANGUAGES
         if (langTarget == null) {
             
-        	TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
         	
-
-            //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),fil);
-            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(label),fil);
-     
-            sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);//.startClient()
-            sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
-            sRequestBuilder.setTypes("translation");
-            sRequestBuilder.setSize(1000);
-        
+        		
+        		TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
+                FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),fil);
+        		//FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(label),FilterBuilders.andFilter(fil).add(fil2));
+        		
+                sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);
+                sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
+                sRequestBuilder.setTypes("translation");
+                sRequestBuilder.setSize(1000);
+                
+                
         // TO A ONLY ONE LANGUAGE  
         } else {
             
         	TermFilterBuilder fil= FilterBuilders.termFilter("source_lang",langSource);
             TermFilterBuilder fil2= FilterBuilders.termFilter("target_lang",langTarget);
 
-            //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),FilterBuilders.andFilter(fil).add(fil2));
-            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(label),FilterBuilders.andFilter(fil).add(fil2));
+            FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", label),FilterBuilders.andFilter(fil).add(fil2));
+            //FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(label),FilterBuilders.andFilter(fil).add(fil2));
      
-            sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);//.startClient()
+            sRequestBuilder = ElasticsSearchAccess.getInstance().prepareSearch().setQuery(builder);
             sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
             sRequestBuilder.setTypes("translation");
             sRequestBuilder.setSize(1000);
-            
-        	
+
         }
+        ListRes = extractTranslationsFromES(sRequestBuilder, false, babelnet);
         
-        List<Translation> ListRes = extractTranslationsFromES(sRequestBuilder, false, babelnet);
         return ListRes;
     }
     
@@ -255,10 +195,12 @@ public class TranslationDAOImpl implements TranslationDAO {
      * 
      */
     @Override
-    public List<Translation> searchIndirectTranslations(String label, String langSource, String langTarget, String langPivot, boolean babelnet,double threshold) {
+    public List<Translation> searchIndirectTranslations(Language Lang,String label, String langSource, String langTarget, String langPivot, boolean babelnet,double threshold) {
 
         
     	List<Translation> listResults= new ArrayList<Translation>();
+    	
+    	System.out.println(langPivot);
     	
         if (langPivot != null) {
         	listResults=IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,langPivot, langTarget,threshold);
@@ -267,8 +209,10 @@ public class TranslationDAOImpl implements TranslationDAO {
              
         } else {
         	
-        	String [] pivotLangs = IndirectTranslation.getPivotLang2(langSource);
-        	for(String pivL: pivotLangs){
+        	System.out.println("ENTRO");
+        	//String [] pivotLangs = IndirectTranslation.getPivotLang2(langSource);
+        	for(String pivL: Lang.getPivotLangCodes()){
+        		System.out.println(">>"+ pivL);
         		listResults.addAll(IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,pivL, langTarget,threshold));
         		
         	}        
@@ -301,6 +245,7 @@ public class TranslationDAOImpl implements TranslationDAO {
     	
     	return newLista;
     }
+    
 
 	@Override
 	public String getLanguageCode(String language) {
@@ -335,12 +280,8 @@ public class TranslationDAOImpl implements TranslationDAO {
 	   		            
 	   	 }
 	   	
-	   		        
-	       //ElasticsSearchAccess.closeClient();
 	   	
 	       return res;
-        
- 
         
 	}
     

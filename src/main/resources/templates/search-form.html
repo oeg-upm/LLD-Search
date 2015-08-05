@@ -80,8 +80,8 @@
 				var myLangs =  getLangArray(); 
 				
 				for (i = 0; i < myLangs.length; i++) { 
-					
-					if(myLangs[i].label == x){
+					var label = myLangs[i].languageLabel;
+					if(label == x){
 					console.log('Selected lang: '+x);
 					
 						var myTrans= myLangs[i].translationLang;
@@ -132,10 +132,11 @@
 
 <body>
 
-    <div id="container">
+    <div id="container" class="page-wrap">
         <div class="row">
             <div class="col-md-12" align="center">
-                <img  th:src="@{/icon/logo/apertiumrdflogo.png}" src="#" />
+				<a th:href="@{/}"><img  th:src="@{/icon/logo/apertiumrdflogo.png}" src="#" /></a>
+                <!--img  th:src="@{/icon/logo/apertiumrdflogo.png}" src="#" /-->
 				 
             </div>
         </div>
@@ -179,7 +180,7 @@
                     <p>Source language:
                         <select th:field="*{langSource}" name="language" id="MySelect" onChange="populate()" onLoad="populate()">
                             <option value="">- select option -</option>
-                            <option th:each="lang : ${languagesMapArray}" th:value="${lang.getLabel()}" th:text="${lang.getLabel()}">
+                            <option th:each="lang : ${languagesMapArray}" th:value="${lang.getLanguageLabel()}" th:text="${lang.getLanguageLabel()}">
                             </option>
                         </select>
                     </p>
@@ -250,23 +251,23 @@
 		
 		
 		
-		<br/><br/><br/><br/><br/><br/><br/><br/>
+		<!--br/><br/><br/><br/><br/><br/><br/><br/>
 		<br/><br/><br/><br/><br/><br/><br/><br/>
 		
 		<div class="row">
             <div class="col-md-12" align="center">
                 <img  th:src="@{/icon/graphlangapertium.png}" src="#" />
             </div>
-        </div>
+        </div-->
 		
 		
 		</div>
 
-        <br/><br/><br/><br/><br/><br/><br/><br/>
+        <!--br/><br/><br/><br/><br/><br/><br/><br/-->
 
-    
+  
 
-    <footer class="footer navbar-inverse">
+    <footer class="site-footer navbar-inverse navbar-fixed-bottom">
       <div class="container">
         <div class="row" style="margin-right: 0px; margin-left: 0px;">
 			<div class="col-md-4">

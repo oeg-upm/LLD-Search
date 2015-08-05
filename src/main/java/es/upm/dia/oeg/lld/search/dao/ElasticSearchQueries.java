@@ -59,9 +59,9 @@ public class ElasticSearchQueries {
         TermFilterBuilder fil = FilterBuilders.termFilter("lexicon_source", SourceLexicon);
         TermFilterBuilder fil2 = FilterBuilders.termFilter("source_lang", sourceLanguage);
 
-        FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", Sourcelemma),
-                FilterBuilders.andFilter(fil).add(fil2));
-
+        FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.termQuery("source_word", Sourcelemma), FilterBuilders.andFilter(fil).add(fil2));
+       // FilteredQueryBuilder builder = QueryBuilders.filteredQuery(QueryBuilders.queryStringQuery(Sourcelemma),FilterBuilders.andFilter(fil).add(fil2));
+        
         SearchRequestBuilder sRequestBuilder = client.prepareSearch().setQuery(builder);//
         sRequestBuilder.setIndices(indexName);
         sRequestBuilder.setTypes("translation");
@@ -70,11 +70,11 @@ public class ElasticSearchQueries {
         Set<String> LexicalEntryList = new HashSet<String>();
 
         SearchResponse response = sRequestBuilder.execute().actionGet();
-        float score=0;
+        float score=0; // avoid : "banco" .... "banco Santander"
 
         for (SearchHit se : response.getHits().getHits()) {
-        	if (se.getScore()>= score){
-        		score= se.getScore();
+        	if(se.getScore()>=score){
+        		score= se.getScore();	
         		LexicalEntryList.add(se.getSource().get("lexicalentrySource").toString());
         	}
         }

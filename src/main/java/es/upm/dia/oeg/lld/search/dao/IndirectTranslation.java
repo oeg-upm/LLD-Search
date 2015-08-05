@@ -14,7 +14,7 @@ public class IndirectTranslation {
 	
 	public static List<Translation> searchIndirectTranslationWithPivotLang(String word,String SourceLang, String PivotLang,String TargetLang,double threshold) {
 
-        Client client = ElasticsSearchAccess.getInstance();//.startClient();
+        Client client = ElasticsSearchAccess.getInstance();
 
         ArrayList<TranslatablePair> translatablePairs = obtainTranslationScoresFromLemma(client, ElasticsSearchAccess.Index, word, SourceLang, PivotLang, TargetLang);
         //ElasticsSearchAccess.closeClient();
@@ -22,7 +22,7 @@ public class IndirectTranslation {
         List<Translation> listResults= new ArrayList<Translation>();
         for (TranslatablePair trans: translatablePairs){
         	
-        	if(trans.score>threshold){
+        	if(trans.score>=threshold){
         	listResults.add(trans.toTranslation());
         	}
         }
@@ -135,55 +135,6 @@ public class IndirectTranslation {
     }
     
     
-    /* Just an function that must be in an xml or something. 
-     * */
-    public static String [] getPivotLang2( String SourceLang){
-    	
-    	if(SourceLang.equals("ro")){
-    		return "es".split(",");
-    		
-    	}
-    	if(SourceLang.equals("ast")){
-    		return "es".split(",");	
-    	}
-    	if(SourceLang.equals("an")){
-    		return "es".split(",");	
-    	}
-    	if(SourceLang.equals("gl")){
-    		return "pt,es,en".split(",");	
-    	}
-    	if(SourceLang.equals("es")){
-    		return "gl,pt,eu,en,ca,eo,oc".split(",");	
-    	}
-    	if(SourceLang.equals("eu")){
-    		return "es,en".split(",");	
-    	}
-    	if(SourceLang.equals("pt")){
-    		return "es,ca,gl".split(",");	
-    	}
-    	if(SourceLang.equals("en")){
-    		return "ca,es,eu,eo,gl".split(",");	
-    	}
-    	if(SourceLang.equals("oc")){
-    		return "es,ca".split(",");	
-    	}
-    	if(SourceLang.equals("ca")){
-    		return "es,fr,eo,en".split(",");	
-    	}
-    	if(SourceLang.equals("eo")){
-    		return "es,ca,en".split(",");	
-    	}
-    	if(SourceLang.equals("it")){
-    		return "ca".split(",");	
-    	}
-    	if(SourceLang.equals("fr")){
-    		return "ca,es".split(",");	
-    	}
-    	else{
-    		return "es,en".split(",");
-    		
-    	}
-    	
-    }
+    
 
 }

@@ -102,7 +102,7 @@ public class SearchController {
         
        
         
-        List<Translation> translations = this.translationService.getTranslations(searchQuery);
+        List<Translation> translations = this.translationService.getTranslations(searchQuery,LangSource);
         model.addAttribute("translations", translations);
         model.addAttribute("searchQuery", searchQuery); 
         

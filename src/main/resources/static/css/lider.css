@@ -1,5 +1,24 @@
 
-
+	* {
+		margin: 0;
+	}
+	html, body {
+		height: 100%;
+	}
+	.page-wrap {
+	  min-height: 100%;
+	  /* equal to footer height */
+		margin-bottom: -60px; 
+	}
+	.page-wrap:after {
+	  content: "";
+	  display: block;
+	}
+	.site-footer {
+	  /* .push must be the same height as footer */
+		height: 60px; 
+		margin-top: 10px;
+	}
 
 
 	.contenedor-ini{
@@ -33,7 +52,8 @@
 	font-size: 25px;
 	}
 	.info-result-row{
-		margin-top:50px;
+		margin-top:60px;
+		margin-bottom: 30px;
 	}
 	
 	.lider-brand{

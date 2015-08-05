@@ -41,6 +41,22 @@
 				}
 				return container;
 			}
+			
+			$(document).ready(function() {
+				$("#targ").change(function() {
+					var group = $(this)
+									 .find('option:selected') // get selected option
+									 .parent()   // get that option's optgroup
+									 .attr("label");   // get optgroup's label
+					if(group == "DIRECT"){
+						$('#pivotLang').prop('disabled', true);
+					}else{
+						 $('#pivotLang').prop('disabled', false);
+					}					 
+			
+				});
+			});
+			
 		</script>	
 		<script type="text/javascript">
 			/*<![CDATA[*/
@@ -55,7 +71,7 @@
 				
 				for (i = 0; i < myLangs.length; i++) { 
 					
-					if(myLangs[i].label == x){
+					if(myLangs[i].languageLabel == x){
 					console.log('encontrado '+x);
 					
 					var myTrans= myLangs[i].translationLang;
@@ -97,9 +113,8 @@
 
   <body>
 
-	
-	
-	<div id="container">
+
+	<div id="container" class="page-wrap"  >
 	
 		<!-- FORMULARY -->
         <form th:action="@{/search}" th:object="${searchQuery}"  method="post">
@@ -138,7 +153,7 @@
 									<p>Source language:
 										<select th:field="*{langSource}" name="language" id="MySelect" onChange="populate()" onLoad="populate()">
 											<option value="">- select option -</option>
-											<option th:each="lang : ${languagesMapArray}" th:value="${lang.getLabel()}" th:text="${lang.getLabel()}">
+											<option th:each="lang : ${languagesMapArray}" th:value="${lang.getLanguageLabel()}" th:text="${lang.getLanguageLabel()}">
 											</option>
 										</select>
 									</p>
@@ -274,13 +289,19 @@
     </div>
 	
    
-	   <!-- foot -->
-      <br/><br/><br/><br/><br/><br/>
+	<!-- foot -->
+    <br/><br/><br/><br/><br/><br/>
 	
 	
-	 </div>
-
-	 <footer class="footer navbar-inverse">
+	
+	
+	<!--div class="push"-->
+	
+	</div> <!-- main container -->
+	
+	
+	
+	 <footer class="site-footer navbar-inverse navbar-fixed-bottom" th:if="${translations==null}">
       <div class="container">
         <div class="row" style="margin-right: 0px; margin-left: 0px;">
 			<div class="col-md-4">
@@ -292,7 +313,20 @@
 		</div>
       </div>
     </footer>
-   
+	
+	<footer class="site-footer navbar-inverse" th:if="${translations!=null}">
+      <div class="container">
+        <div class="row" style="margin-right: 0px; margin-left: 0px;">
+			<div class="col-md-4">
+					<a href="http://www.oeg-upm.net/"><img th:src="@{/icon/logo/logoOEG.png}" src="#" /></a> 
+					</div>
+			<div class="col-md-5 col-md-offset-2">
+					<h5 class="info-footer">Ontology Engineering Group</h5>
+			</div>
+		</div>
+      </div>
+    </footer>
+
    
    <script type='text/javascript'>
         $(document).ready(function() {
