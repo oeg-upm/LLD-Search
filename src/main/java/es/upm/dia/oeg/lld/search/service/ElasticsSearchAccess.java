@@ -1,4 +1,4 @@
-package es.upm.dia.oeg.lld.search.dao;
+package es.upm.dia.oeg.lld.search.service;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;

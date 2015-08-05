@@ -17,7 +17,9 @@ public class Language {
 	public String [] indirectLangCodes;
 	public String [] pivotLangCodes;
 	
-	public Language(String LangLabel, String trans, String transCodes, String indirecttrans, String indirecttransCodes,String pivtrans, String pivtransCodes){
+	public Language(String LangLabel, String trans, String transCodes,
+			String indirecttrans, String indirecttransCodes,String pivtrans, String pivtransCodes){
+		
 		languageLabel= LangLabel;
 		translationLang= ArrayUtils.addAll(new String[]{"All"}, trans.split(","));
 		translationLangCodes=  transCodes.split(",");
@@ -82,7 +84,4 @@ public class Language {
 		return false;
 	}
 	
-	
-	
-
 }

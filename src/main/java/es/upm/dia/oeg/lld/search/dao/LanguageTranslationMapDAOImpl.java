@@ -9,65 +9,17 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.search.SearchHit;
-import org.springframework.stereotype.Component;
 
 import es.upm.dia.oeg.lld.search.model.Language;
-import es.upm.dia.oeg.lld.search.dao.ElasticsSearchAccess;
+import es.upm.dia.oeg.lld.search.service.ElasticsSearchAccess;
 
+public class LanguageTranslationMapDAOImpl {
+	
+	
 
-@Component
-public class LanguageTranslationMap {
-	
-	
-	Language [] LanguageArray;
-	Map <String, String> LangCodesMap;
-	
-	public LanguageTranslationMap(){
-		
-		LanguageArray=createLanguageArray();
-		LangCodesMap= createLangCodeMap();
-	}
-	
-	
-	public Language[] getLanguageArray(){
-		
-		if(LanguageArray==null){
-			LanguageArray=this.createLanguageArray();
-		}
-		
-		return LanguageArray;
-	}
-	
-	
-	public String getLangCode(String lang){
-			
-			if(LangCodesMap==null){
-				LangCodesMap=this.createLangCodeMap();
-			}
-			
-			if (lang == null) {return "All";}
-			if (lang.equals("null")) {return "All";}
-			
-			return LangCodesMap.get(lang);
-	}
-	
-	public Map<String,String> getLangCodesMap(){
-		
-		if(LangCodesMap==null){
-			LangCodesMap=this.createLangCodeMap();
-		}
-		
-		return LangCodesMap;
-	}
-
-	
-	///// this should not be here
-	
 	public Map<String,String> createLangCodeMap(){
         //Get document
-		
-		
-		
+
 		Client client= ElasticsSearchAccess.getInstance();
     	
 	   	String guery="{" +
@@ -137,23 +89,8 @@ public class LanguageTranslationMap {
 	   	}
    	
 	   	return langsList.toArray(new Language[ langsList.size()] );
-
-        
-
-            
+ 
     }
-
-	
-	public Language getSourceLanguage(String langSource) {
-					
-			for (Language lang: this.LanguageArray){
-				if(lang.getLanguageLabel().equals(langSource)){
-					return lang;
-				}
-			}
-			return new Language();
-		}
-	
 	
 
 }

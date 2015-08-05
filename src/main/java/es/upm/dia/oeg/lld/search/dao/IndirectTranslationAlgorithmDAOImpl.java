@@ -15,7 +15,7 @@ import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 
-public class ElasticSearchQueries {
+public class IndirectTranslationAlgorithmDAOImpl {
 	
 	public static String getTranslationSetFromDictionary(Client client, String indexName, String SourceLang, String TargetLang) {
 
@@ -35,6 +35,7 @@ public class ElasticSearchQueries {
         return res;
     }
     
+
     
     public static String getLexiconfromLanguage(Client client, String indexName, String Lang) {
 
@@ -52,6 +53,7 @@ public class ElasticSearchQueries {
         }
         return res;
     }
+    
 
     
     public static List<String> getLexicalEntriesFromLemma(Client client, String indexName, String SourceLexicon, String Sourcelemma, String sourceLanguage) {

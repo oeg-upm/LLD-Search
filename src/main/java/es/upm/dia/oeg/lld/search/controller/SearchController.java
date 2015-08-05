@@ -1,6 +1,6 @@
 package es.upm.dia.oeg.lld.search.controller;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import es.upm.dia.oeg.lld.search.dao.LanguageTranslationMap;
 import es.upm.dia.oeg.lld.search.model.Language;
+import es.upm.dia.oeg.lld.search.model.LanguageTranslationMap;
 import es.upm.dia.oeg.lld.search.model.SearchQuery;
 import es.upm.dia.oeg.lld.search.model.Translation;
 import es.upm.dia.oeg.lld.search.service.TranslationService;
@@ -67,7 +67,7 @@ public class SearchController {
         this.sqValidator.validate(searchQuery, bindingResult);
         
         Language LangSource= LangMap.getSourceLanguage(searchQuery.getLangSource());
-        // ADD ATTRIBUTES FOR LANG TARGET (Navigation)
+        // ADD ATTRIBUTES FOR LANG TARGET (Navigation - view)
         initLists(model);
         model.addAttribute("languagesTargetDirect", LangSource.translationLang);
         model.addAttribute("languagesTargetIndirect", LangSource.indirectLang);
@@ -92,7 +92,6 @@ public class SearchController {
         }
         
         // set code languages
-        
     	searchQuery.setLangSourceCode(LangMap.getLangCode(searchQuery.getLangSource()));
     	searchQuery.setLangTargetCode(LangMap.getLangCode(searchQuery.getLangTarget()));
     	searchQuery.setPivotLanguageCode(LangMap.getLangCode(searchQuery.getPivotLanguage()));
@@ -119,13 +118,8 @@ public class SearchController {
     
     
     private void initLists(Model model) {
-        final List<String> languages = this.translationService.getLanguages();
-        final List<String> languagesTo = new ArrayList<String>();
+        final List<String> languages = this.LangMap.getAllLanguagesLabels();
 
-        // // First option is all languages (no restriction)
-        languagesTo.add("All");
-        languagesTo.addAll(languages);
-        
         model.addAttribute("languagesFrom", languages);
         model.addAttribute("languagesMapArray", LangMap.getLanguageArray());
        

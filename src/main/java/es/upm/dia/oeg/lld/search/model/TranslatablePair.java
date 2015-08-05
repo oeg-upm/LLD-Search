@@ -1,8 +1,6 @@
-package es.upm.dia.oeg.lld.search.dao;
+package es.upm.dia.oeg.lld.search.model;
 
 import java.net.URISyntaxException;
-
-import es.upm.dia.oeg.lld.search.model.Translation;
 
 public class TranslatablePair {
 	

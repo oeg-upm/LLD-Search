@@ -7,9 +7,6 @@ import es.upm.dia.oeg.lld.search.model.Translation;
 
 public interface TranslationDAO {
 
-    public List<String> getLanguages();
-    
-    public String getLanguageCode(String language);
 
     public List<Translation> searchDirectTranslations(Language lang, String label,
             String langSource, String langTarget, boolean babelnet);

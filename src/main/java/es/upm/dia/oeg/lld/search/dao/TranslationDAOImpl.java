@@ -5,69 +5,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
-
-
-
-
 import java.util.Set;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.springframework.stereotype.Component;
 import org.elasticsearch.search.SearchHit;
 
+import es.upm.dia.oeg.lld.search.model.IndirectTranslationAlgorithm;
 import es.upm.dia.oeg.lld.search.model.Language;
 import es.upm.dia.oeg.lld.search.model.Translation;
+import es.upm.dia.oeg.lld.search.service.ElasticsSearchAccess;
+
 
 @Component
 public class TranslationDAOImpl implements TranslationDAO {
 
-	/**
-	 *  Get all dictionaries 
-	 */
-    @Override
-    public List<String> getLanguages() {
-
-    	
-    	Client client= ElasticsSearchAccess.getInstance();
-    	
-   	 String guery="{" +
-   		        "  \"query\": { \"match_all\": {} }" +
-   		        "}";
-   		        
-   	 SearchRequestBuilder sRequestBuilder = client.prepareSearch(guery);//
-   	 sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
-   	 sRequestBuilder.setTypes("language");
-   	 sRequestBuilder.setSize(500);
-
-   	 SearchResponse response = sRequestBuilder.execute().actionGet();
-
-   	 final List<String> languages = new ArrayList<String>();
-   		        
-   	 for (SearchHit se : response.getHits().getHits()){
-   		 
-   		  languages.add(se.getSource().get("langExtended").toString());
-   		  
-   		            
-   	 }
-   	
-   		        
-       //ElasticsSearchAccess.closeClient();
-   	
-       return languages;
-       
-       
-    }
-
-    
-    
     /**
      * Create translation from searchhit from elasticsearch
      * @param se
@@ -75,10 +32,9 @@ public class TranslationDAOImpl implements TranslationDAO {
      * @param babelnet
      * @return
      */
+	
     private final Translation createTranslationFromSearchHit(SearchHit se, boolean indirect, boolean babelnet) {
         final Translation trans = new Translation();
-
-       
         
         try {
          
@@ -196,33 +152,21 @@ public class TranslationDAOImpl implements TranslationDAO {
      */
     @Override
     public List<Translation> searchIndirectTranslations(Language Lang,String label, String langSource, String langTarget, String langPivot, boolean babelnet,double threshold) {
-
         
     	List<Translation> listResults= new ArrayList<Translation>();
     	
-    	System.out.println(langPivot);
-    	
         if (langPivot != null) {
-        	listResults=IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,langPivot, langTarget,threshold);
-        	
-        	
-             
+        	listResults=IndirectTranslationAlgorithm.searchIndirectTranslationWithPivotLang(label,langSource,langPivot, langTarget,threshold);
+
         } else {
         	
-        	System.out.println("ENTRO");
-        	//String [] pivotLangs = IndirectTranslation.getPivotLang2(langSource);
         	for(String pivL: Lang.getPivotLangCodes()){
-        		System.out.println(">>"+ pivL);
-        		listResults.addAll(IndirectTranslation.searchIndirectTranslationWithPivotLang(label,langSource,pivL, langTarget,threshold));
-        		
+        		listResults.addAll(IndirectTranslationAlgorithm.searchIndirectTranslationWithPivotLang(label,langSource,pivL, langTarget,threshold));
         	}        
         }
         
         Collections.sort(listResults);
-        
-
         return listResults;
-    
     }
     
 
@@ -238,56 +182,11 @@ public class TranslationDAOImpl implements TranslationDAO {
     		if(!set.contains(text)){
     			set.add(text);
     			newLista.add(t);
-    			
     		}
-    		
     	}
     	
     	return newLista;
     }
     
-
-	@Override
-	public String getLanguageCode(String language) {
-		
-		if (language.equals("All")){
-			
-			return "All";
-		}
-		
-		Client client= ElasticsSearchAccess.getInstance();
-    	
-	   	 String guery="{" +
-	   		        "  \"query\": { \"match_all\": {} }" +
-	   		        "}";
-	   		        
-	   	 SearchRequestBuilder sRequestBuilder = client.prepareSearch(guery);//
-	   	 sRequestBuilder.setIndices(ElasticsSearchAccess.Index);
-	   	 sRequestBuilder.setTypes("language");
-	   	 sRequestBuilder.setSize(500);
-
-	   	 SearchResponse response = sRequestBuilder.execute().actionGet();
-
-	   
-	   	 String res="";
-	   	 for (SearchHit se : response.getHits().getHits()){
-	   		 
-	   		  if(se.getSource().get("langExtended").toString().equals(language)){
-	   			  res=se.getSource().get("lang").toString();
-	   			  return res; 
-	   		  }
-	   		  
-	   		            
-	   	 }
-	   	
-	   	
-	       return res;
-        
-	}
-    
-   
-    
-   
-   
     
 }
